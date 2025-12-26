@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioSense - Login</title>
+    <link rel="stylesheet" href="./static/css/output.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@2.3.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .metric-card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #e5e7eb;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.07);
+        }
+
+        .pulse-live {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        .alert-banner {
+            animation: slideInDown 0.5s ease-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .view-toggle-btn {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .view-toggle-btn.active {
+            background-color: #ef4444;
+            color: white;
+            box-shadow: 0 4px 14px 0 rgb(0 0 0 / 10%);
+        }
+
+        #chat-window {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+
+        .chat-bubble-user {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .chat-bubble-bot {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .risk-value {
+            transition: color 0.5s ease-in-out;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* New Voice UI Styles */
+        .mic-active {
+            color: #ef4444;
+            animation: mic-pulse 1s infinite alternate;
+        }
+
+        @keyframes mic-pulse {
+            from {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            to {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+        }
+    </style>
+</head>
+
+<body class="text-gray-800">
+
+    <div id="login-page" class="flex items-center justify-center min-h-screen bg-gray-100">
+        <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-2xl shadow-xl">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-3 mb-4">
+                    <svg class="w-12 h-12 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                    <h1 class="text-3xl font-bold text-gray-900">CardioSense</h1>
+                </div>
+                <p id="auth-instruction" class="text-gray-600">Please sign in to access your health dashboard.</p>
+            </div>
+
+            <form id="login-form" class="mt-8 space-y-6">
+                <div class="space-y-4">
+                    <div>
+                        <input id="username" name="username" type="text" required
+                            class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                            placeholder="Username">
+                    </div>
+                    <div>
+                        <input id="password" name="password" type="password" required
+                            class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                            placeholder="Password">
+                    </div>
+                </div>
+                <div id="login-error" class="text-red-500 text-sm text-center hidden">Invalid username or password.
+                </div>
+                <div>
+                    <button type="submit"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-lg text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-transform transform hover:scale-105">
+                        Sign In
+                    </button>
+                </div>
+                <p class="text-center text-sm text-gray-500">
+                    New user? <a href="#" id="go-to-signup" class="text-red-500 font-semibold hover:underline">Sign Up
+                        here</a>
+                </p>
+            </form>
+
+            <form id="signup-form" class="mt-8 space-y-4 hidden">
+                <div class="space-y-4">
+                    <input id="new-username" type="text" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                        placeholder="Choose Username">
+                    <input id="new-password" type="password" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                        placeholder="Create Password">
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input id="terms" type="checkbox" required
+                                class="focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded">
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="terms" class="font-medium text-gray-700">I agree to the <a href="#"
+                                    class="text-red-500 hover:underline">Terms of Service</a> and <a href="#"
+                                    class="text-red-500 hover:underline">Privacy Policy</a>.</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="signup-success" class="text-green-600 text-sm text-center hidden">Account created! You can now
+                    sign in.</div>
+                <button type="submit"
+                    class="w-full py-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600">Create
+                    Account</button>
+                <p class="text-center text-sm text-gray-500">
+                    Already have an account? <a href="#" id="go-to-login"
+                        class="text-red-500 font-semibold hover:underline">Sign In</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <div id="app-container" class="hidden">
+        <header class="bg-white shadow-sm sticky top-0 z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-10 h-10 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                    <h1 class="text-2xl font-bold text-gray-900">CardioSense</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="patient-name" class="text-sm font-medium">Patient:</span>
+                    <div id="patient-initials"
+                        class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-600">
+                        --</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div id="alert-container" class="mb-6 sticky top-24 z-20"></div>
+
+            <div id="controls" class="flex justify-center mb-8 space-x-4">
+                <button id="start-button"
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                    Begin Real-Time Monitoring
+                </button>
+                <button id="stop-button"
+                    class="hidden bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                    Stop Monitoring
+                </button>
+            </div>
+
+            <div id="dashboard" class="hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="metric-card p-4 md:p-6 text-center">
+                        <h2 class="text-md font-semibold text-gray-600">Heart Rate</h2>
+                        <p class="text-4xl md:text-5xl font-bold mt-2" id="hr-value">--</p>
+                        <p class="text-xs text-gray-500 mt-1">BPM</p>
+                    </div>
+                    <div class="metric-card p-4 md:p-6 text-center">
+                        <h2 class="text-md font-semibold text-gray-600">SpO2</h2>
+                        <p class="text-4xl md:text-5xl font-bold mt-2" id="spo2-value">--</p>
+                        <p class="text-xs text-gray-500 mt-1">% Saturation</p>
+                    </div>
+                    <div class="metric-card p-4 md:p-6 text-center">
+                        <h2 class="text-md font-semibold text-gray-600">HRV</h2>
+                        <p class="text-4xl md:text-5xl font-bold mt-2" id="hrv-value">--</p>
+                        <p class="text-xs text-gray-500 mt-1">ms</p>
+                    </div>
+                    <div id="risk-card" class="metric-card p-4 md:p-6 text-center border-2 border-transparent">
+                        <h2 class="text-md font-semibold text-gray-600">Heart Attack Risk</h2>
+                        <p class="text-4xl md:text-5xl font-bold mt-2 risk-value" id="risk-value">--</p>
+                        <p class="text-xs text-gray-500 mt-1">Prediction</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-center mb-6 bg-gray-200 rounded-full p-1 max-w-sm mx-auto">
+                    <button id="live-view-btn"
+                        class="view-toggle-btn active w-full py-2 px-4 rounded-full font-semibold">Live Monitor</button>
+                    <button id="history-view-btn"
+                        class="view-toggle-btn w-full py-2 px-4 rounded-full font-semibold">Historical Data</button>
+                </div>
+
+                <div id="live-dashboard">
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                        <div class="lg:col-span-3 metric-card p-6 h-96">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold text-gray-700">Live ECG & PPG Signals</h2>
+                                <div id="live-indicator" class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-gray-300 rounded-full"></div><span>Connecting...</span>
+                                </div>
+                            </div>
+                            <canvas id="ecgChart"></canvas>
+                        </div>
+                        <div class="lg:col-span-2 metric-card p-6 h-96">
+                            <h2 class="text-xl font-semibold text-gray-700 mb-4">AI Recommendations</h2>
+                            <div id="recommendations-container" class="space-y-4 overflow-y-auto h-72 pr-2">
+                                <p class="text-gray-500">Begin monitoring to receive health insights...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="historical-dashboard" class="hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="metric-card p-6 h-80">
+                            <h2 class="text-xl font-semibold text-gray-700 mb-4">Heart Rate (Last 24 Hours)</h2><canvas
+                                id="hrHistoryChart"></canvas>
+                        </div>
+                        <div class="metric-card p-6 h-80">
+                            <h2 class="text-xl font-semibold text-gray-700 mb-4">SpO2 (Last 7 Days)</h2><canvas
+                                id="spo2HistoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="chatbot-container" class="fixed bottom-6 right-6 z-30">
+            <div id="chat-window"
+                class="hidden absolute bottom-20 right-0 w-80 h-96 bg-white rounded-2xl shadow-2xl flex flex-col transform translate-y-4 opacity-0">
+                <div class="p-4 bg-red-500 text-white rounded-t-2xl flex justify-between items-center">
+                    <h3 class="font-bold">CardioSense Assistant</h3>
+                    <button id="close-chat-btn" class="text-white text-2xl leading-none">&times;</button>
+                </div>
+                <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 flex flex-col"></div>
+                <form id="chat-form" class="p-4 border-t border-gray-200 flex items-center gap-2">
+                    <button type="button" id="voice-input-btn"
+                        class="text-gray-400 hover:text-red-500 transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                            <path
+                                d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                        </svg>
+                    </button>
+                    <input type="text" id="chat-input"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                        placeholder="Ask a question...">
+                    <button type="submit" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+            <button id="chat-toggle-btn"
+                class="bg-red-500 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center transform hover:scale-110 transition-transform">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const elements = {
+            loginPage: document.getElementById('login-page'),
+            loginForm: document.getElementById('login-form'),
+            signupForm: document.getElementById('signup-form'),
+            loginError: document.getElementById('login-error'),
+            usernameInput: document.getElementById('username'),
+            passwordInput: document.getElementById('password'),
+            appContainer: document.getElementById('app-container'),
+            patientName: document.getElementById('patient-name'),
+            patientInitials: document.getElementById('patient-initials'),
+            startButton: document.getElementById('start-button'),
+            stopButton: document.getElementById('stop-button'),
+            dashboard: document.getElementById('dashboard'),
+            hrValue: document.getElementById('hr-value'),
+            spo2Value: document.getElementById('spo2-value'),
+            hrvValue: document.getElementById('hrv-value'),
+            riskCard: document.getElementById('risk-card'),
+            riskValue: document.getElementById('risk-value'),
+            liveIndicator: document.getElementById('live-indicator'),
+            alertContainer: document.getElementById('alert-container'),
+            ecgCanvas: document.getElementById('ecgChart'),
+            hrHistoryCanvas: document.getElementById('hrHistoryChart'),
+            spo2HistoryCanvas: document.getElementById('spo2HistoryChart'),
+            recommendationsContainer: document.getElementById('recommendations-container'),
+            liveViewBtn: document.getElementById('live-view-btn'),
+            historyViewBtn: document.getElementById('history-view-btn'),
+            liveDashboard: document.getElementById('live-dashboard'),
+            historicalDashboard: document.getElementById('historical-dashboard'),
+            chatToggleButton: document.getElementById('chat-toggle-btn'),
+            chatWindow: document.getElementById('chat-window'),
+            closeChatButton: document.getElementById('close-chat-btn'),
+            chatMessages: document.getElementById('chat-messages'),
+            chatForm: document.getElementById('chat-form'),
+            chatInput: document.getElementById('chat-input'),
+            voiceBtn: document.getElementById('voice-input-btn')
+        };
+
+        let monitoringInterval;
+        let charts = {};
+        let isChatOpen = false;
+        let chatHistoryData = {};
+
+        // ===== Trend Memory (NEW - does NOT affect UI) =====
+        let trendMemory = {
+            hr: [],
+            spo2: [],
+            hrv: []
+        };
+
+        let hrHistory = JSON.parse(localStorage.getItem("hrHistory")) || [];
+        let spo2History = JSON.parse(localStorage.getItem("spo2History")) || [];
+
+        // ===== Greeting Detection (NEW) =====
+        function isGreeting(text) {
+            const greetings = [
+                "hi", "hii", "hai", "hello", "hey",
+                "good morning", "good afternoon", "good evening"
+            ];
+            const lower = text.toLowerCase().trim();
+            return greetings.includes(lower);
+        }
+
+
+        function getTrendStatus(values) {
+            if (values.length < 5) return "stable so far";
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+            const last = values[values.length - 1];
+            return Math.abs(last - avg) < avg * 0.1
+                ? "stable over recent readings"
+                : "showing noticeable variation";
+        }
+
+
+        const API_KEY = "YOUR_API_KEY_HERE";
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
+        const MODEL_NAME = "gemini-2.5-flash-preview-09-2025";
+
+        /**
+         * 1. VOICE RECOGNITION (Speech-to-Text)
+         */
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+
+            elements.voiceBtn.onclick = () => {
+                recognition.start();
+                elements.voiceBtn.classList.add('mic-active');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                elements.chatInput.value = transcript;
+                elements.voiceBtn.classList.remove('mic-active');
+                elements.chatForm.dispatchEvent(new Event('submit'));
+            };
+
+            recognition.onerror = () => {
+                elements.voiceBtn.classList.remove('mic-active');
+            };
+        } else {
+            elements.voiceBtn.style.display = 'none';
+        }
+
+        /**
+         * 2. VOICE SYNTHESIS (Text-to-Speech)
+         */
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                // Strip HTML tags for cleaner speech
+                const cleanText = text.replace(/<\/?[^>]+(>|$)/g, "");
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        document.getElementById('go-to-signup').onclick = (e) => {
+            e.preventDefault();
+            elements.loginForm.classList.add('hidden');
+            elements.signupForm.classList.remove('hidden');
+            document.getElementById('auth-instruction').textContent = "Join CardioSense to monitor your heart.";
+        };
+
+        document.getElementById('go-to-login').onclick = (e) => {
+            e.preventDefault();
+            elements.signupForm.classList.add('hidden');
+            elements.loginForm.classList.remove('hidden');
+            document.getElementById('auth-instruction').textContent = "Please sign in to access your health dashboard.";
+        };
+
+        elements.signupForm.onsubmit = (e) => {
+            e.preventDefault();
+            const user = document.getElementById('new-username').value.trim();
+            const pass = document.getElementById('new-password').value.trim();
+            if (user && pass) {
+                localStorage.setItem(`user_${user}`, pass);
+                document.getElementById('signup-success').classList.remove('hidden');
+                setTimeout(() => {
+                    elements.signupForm.classList.add('hidden');
+                    elements.loginForm.classList.remove('hidden');
+                    document.getElementById('auth-instruction').textContent = "Please sign in to access your health dashboard.";
+                }, 1500);
+            }
+        };
+
+        elements.loginForm.onsubmit = (e) => {
+            e.preventDefault();
+            const username = elements.usernameInput.value.trim();
+            const password = elements.passwordInput.value.trim();
+            const storedPass = localStorage.getItem(`user_${username}`);
+            if (storedPass && storedPass === password) {
+                elements.loginError.classList.add('hidden');
+                elements.patientName.textContent = `Patient: ${username}`;
+                const initials = username.split(' ').map(n => n[0]).join('').toUpperCase();
+                elements.patientInitials.textContent = initials.substring(0, 2);
+                elements.loginPage.classList.add('fade-out');
+                setTimeout(() => {
+                    elements.loginPage.classList.add('hidden');
+                    elements.appContainer.classList.remove('hidden');
+                }, 500);
+                document.title = "CardioSense - Dashboard";
+            } else {
+                elements.loginError.classList.remove('hidden');
+                elements.loginError.textContent = "Incorrect username or password.";
+            }
+        };
+
+        const recommendations = {
+            CRITICAL_HR: "Your heart rate is significantly elevated compared to your normal pattern. If you are at rest, this may indicate physical or emotional stress. Please stop any activity, sit or lie down, and focus on slow, deep breathing. If discomfort persists, seek medical attention.",
+
+            ELEVATED_HR: "Your heart rate is slightly higher than usual. This can occur due to stress, recent activity, or stimulants like caffeine. Consider taking a short break and allowing your body to recover.",
+
+            LOW_SPO2: "Your oxygen levels are lower than optimal. Try slow, deep breathing and ensure you are in a well-ventilated environment. If this pattern continues, medical advice is recommended.",
+
+            LOW_HRV: "Your heart rate variability suggests increased physical or mental strain. Prioritizing rest, hydration, and quality sleep may help restore balance.",
+
+            RISING_RISK_TREND: "Your cardiovascular risk indicator shows an upward trend. While not critical, paying attention to stress, sleep, and daily activity is advised.",
+
+            DATA_INSUFFICIENT: "More data is needed to generate personalized insights. Please continue monitoring to enable accurate trend analysis.",
+
+            NORMAL: "Your vital signs are stable and within healthy ranges. Continue your current routine, stay hydrated, and maintain regular monitoring for long-term trends."
+        };
+
+        function createAlert(type, message) {
+            elements.alertContainer.innerHTML = '';
+            let bgColor, icon, title;
+            if (type === 'CRITICAL_HR') {
+                bgColor = 'bg-red-100 border-red-500 text-red-700';
+                title = 'CRITICAL ALERT';
+                icon = `<svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
+            } else {
+                bgColor = 'bg-yellow-100 border-yellow-500 text-yellow-700';
+                title = 'MILD ANOMALY DETECTED';
+                icon = `<svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            }
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert-banner border-l-4 p-4 rounded-lg shadow-md ${bgColor}`;
+            alertDiv.innerHTML = `<div class="flex items-center">${icon}<div><p class="font-bold">${title}</p><p class="text-sm">${message}</p></div></div>`;
+            elements.alertContainer.appendChild(alertDiv);
+        }
+
+        function updateRecommendations(status) {
+            const text = recommendations[status] || recommendations['NORMAL'];
+            elements.recommendationsContainer.innerHTML = `<div class="p-4 bg-gray-100 rounded-lg"><p class="font-semibold text-gray-700">Health Insight</p><p class="text-gray-600 text-sm">${text}</p></div>`;
+        }
+
+        function updateRiskCard(risk) {
+            elements.riskValue.textContent = `${risk}%`;
+            elements.riskValue.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500');
+            elements.riskCard.classList.remove('border-green-500', 'border-yellow-500', 'border-red-500');
+            if (risk < 30) {
+                elements.riskValue.classList.add('text-green-500');
+                elements.riskCard.classList.add('border-green-500');
+            } else if (risk < 60) {
+                elements.riskValue.classList.add('text-yellow-500');
+                elements.riskCard.classList.add('border-yellow-500');
+            } else {
+                elements.riskValue.classList.add('text-red-500');
+                elements.riskCard.classList.add('border-red-500');
+            }
+        }
+
+        async function updateDashboard() {
+            try {
+                const data = mockLiveData();
+                elements.hrValue.textContent = data.heartRate;
+                elements.spo2Value.textContent = `${data.spo2}`;
+                elements.hrvValue.textContent = `${data.hrv}`;
+
+                const now = Date.now();
+
+                // Store HR
+                hrHistory.push({ value: data.heartRate, time: now });
+
+                // Store SpO2
+                spo2History.push({ value: data.spo2, time: now });
+
+                // Keep only last 24h HR
+                const DAY = 24 * 60 * 60 * 1000;
+                hrHistory = hrHistory.filter(d => now - d.time <= DAY);
+
+                // Keep only last 7 days SpO2
+                spo2History = spo2History.filter(d => now - d.time <= 7 * DAY);
+
+                localStorage.setItem("hrHistory", JSON.stringify(hrHistory));
+                localStorage.setItem("spo2History", JSON.stringify(spo2History));
+
+
+                // Store values for trend-aware chatbot
+                trendMemory.hr.push(data.heartRate);
+                trendMemory.spo2.push(data.spo2);
+                trendMemory.hrv.push(data.hrv);
+
+                if (trendMemory.hr.length > 20) {
+                    trendMemory.hr.shift();
+                    trendMemory.spo2.shift();
+                    trendMemory.hrv.shift();
+                }
+
+                // ===== UPDATE HEART RATE HISTORY CHART =====
+                if (charts.hrHistory) {
+                    charts.hrHistory.data.labels = hrHistory.map(d =>
+                        new Date(d.time).toLocaleTimeString()
+                    );
+                    charts.hrHistory.data.datasets[0].data =
+                        hrHistory.map(d => d.value);
+                    charts.hrHistory.update();
+                }
+
+                // ===== UPDATE SPO2 HISTORY CHART =====
+                if (charts.spo2History) {
+                    const daily = {};
+
+                    spo2History.forEach(d => {
+                        const day = new Date(d.time).toDateString();
+                        if (!daily[day]) daily[day] = [];
+                        daily[day].push(d.value);
+                    });
+
+                    charts.spo2History.data.labels = Object.keys(daily);
+                    charts.spo2History.data.datasets[0].data =
+                        Object.values(daily).map(arr =>
+                            Math.round(arr.reduce((a, b) => a + b, 0) / arr.length)
+                        );
+
+                    charts.spo2History.update();
+                }
+
+
+                updateRiskCard(data.heartAttackChance);
+                if (data.status !== 'NORMAL') {
+                    createAlert(data.status, recommendations[data.status].split('.')[0] + '.');
+                } else {
+                    elements.alertContainer.innerHTML = '';
+                }
+                updateRecommendations(data.status);
+            } catch (error) {
+                console.error("Failed to process simulated data:", error);
+            }
+        }
+
+        let anomalyStep = 0;
+        function mockLiveData() {
+            anomalyStep++;
+            let hr = Math.floor(Math.random() * (90 - 65 + 1)) + 65;
+            let spo2 = Math.floor(Math.random() * (99 - 96 + 1)) + 96;
+            let hrv = Math.floor(Math.random() * (100 - 40 + 1)) + 40;
+            let risk = Math.floor(Math.random() * 20) + 10;
+            let status = 'NORMAL';
+            if (anomalyStep % 15 === 0) {
+                hr = Math.floor(Math.random() * (115 - 95 + 1)) + 95;
+                spo2 = Math.floor(Math.random() * (95 - 93 + 1)) + 93;
+                risk = Math.floor(Math.random() * (50 - 30 + 1)) + 30;
+                status = 'LOW_SPO2';
+            }
+            if (anomalyStep % 35 === 0) {
+                hr = Math.floor(Math.random() * (160 - 120 + 1)) + 120;
+                spo2 = Math.floor(Math.random() * (92 - 88 + 1)) + 88;
+                risk = Math.floor(Math.random() * (90 - 60 + 1)) + 60;
+                status = 'CRITICAL_HR';
+            }
+            return { heartRate: hr, spo2: spo2, hrv: hrv, heartAttackChance: risk, status: status };
+
+        }
+
+        //function generateAndStoreHistoryData() {
+        //chatHistoryData.hrLast24Hours = Array.from({ length: 24 }, () => Math.floor(Math.random() * (110 - 60)) + 60);
+        //chatHistoryData.spo2Last7Days = Array.from({ length: 7 }, () => Math.floor(Math.random() * (99 - 95)) + 95);
+        //}
+
+        function initializeCharts() {
+            Object.values(charts).forEach(chart => chart.destroy());
+            const ecgCtx = elements.ecgCanvas.getContext('2d');
+            charts.ecg = new Chart(ecgCtx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        { label: 'ECG Signal', borderColor: 'rgb(239, 68, 68)', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderWidth: 2, pointRadius: 0, data: [], fill: false },
+                        { label: 'PPG Signal', borderColor: 'rgb(59, 130, 246)', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, pointRadius: 0, data: [], fill: false }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'realtime', realtime: {
+                                duration: 20000, refresh: 1000, delay: 1000, onRefresh: chart => {
+                                    const now = Date.now();
+                                    const period = 500 + Math.random() * 100;
+                                    const timeFactor = (now % period) / period;
+                                    let ecgValue = 0;
+                                    if (timeFactor < 0.1) ecgValue = Math.sin(timeFactor * 10 * Math.PI) * 0.2;
+                                    else if (timeFactor > 0.15 && timeFactor < 0.2) ecgValue = Math.sin((timeFactor - 0.15) * 20 * Math.PI) * 1.0;
+                                    else if (timeFactor > 0.3 && timeFactor < 0.4) ecgValue = Math.sin((timeFactor - 0.3) * 10 * Math.PI) * 0.3;
+                                    const noise = (Math.random() - 0.5) * 0.05;
+                                    const ppgDelay = 100;
+                                    const ppgFactor = ((now - ppgDelay) % period) / period;
+                                    const ppgValue = Math.max(0, Math.sin(ppgFactor * 2 * Math.PI)) * 0.8;
+                                    const ppgNoise = (Math.random() - 0.5) * 0.03;
+                                    chart.data.datasets[0].data.push({ x: now, y: ecgValue + noise });
+                                    chart.data.datasets[1].data.push({ x: now, y: ppgValue + ppgNoise });
+                                }
+                            }
+                        },
+                        y: { min: -1.5, max: 1.5, ticks: { display: false } }
+                    },
+                    plugins: { legend: { display: true, position: 'top' }, tooltip: { enabled: false } },
+                    elements: { line: { tension: 0.2 } }
+                }
+            });
+            const hrHistoryCtx = elements.hrHistoryCanvas.getContext('2d');
+            const hrLabels = hrHistory.map(d =>
+                new Date(d.time).toLocaleTimeString()
+            );
+            const hrValues = hrHistory.map(d => d.value);
+
+            charts.hrHistory = new Chart(hrHistoryCtx, {
+                type: 'line',
+                data: {
+                    labels: hrLabels,
+                    datasets: [{
+                        label: 'BPM',
+                        data: hrValues,
+                        borderColor: 'rgb(59, 130, 246)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            const spo2HistoryCtx = elements.spo2HistoryCanvas.getContext('2d');
+            const spo2Daily = {};
+            spo2History.forEach(d => {
+                const day = new Date(d.time).toDateString();
+                if (!spo2Daily[day]) spo2Daily[day] = [];
+                spo2Daily[day].push(d.value);
+            });
+
+            const spo2Labels = Object.keys(spo2Daily);
+            const spo2Values = spo2Labels.map(day =>
+                Math.round(
+                    spo2Daily[day].reduce((a, b) => a + b, 0) / spo2Daily[day].length
+                )
+            );
+
+            charts.spo2History = new Chart(spo2HistoryCtx, {
+                type: 'bar',
+                data: {
+                    labels: spo2Labels,
+                    datasets: [{
+                        label: '%',
+                        data: spo2Values,
+                        backgroundColor: 'rgb(34, 197, 94)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function startMonitoring() {
+            elements.startButton.classList.add('hidden');
+            elements.stopButton.classList.remove('hidden');
+            elements.dashboard.classList.remove('hidden');
+            elements.liveIndicator.innerHTML = `<div class="w-3 h-3 bg-red-500 rounded-full pulse-live"></div><span>Live</span>`;
+            //generateAndStoreHistoryData();
+            initializeCharts();
+            updateDashboard();
+            monitoringInterval = setInterval(updateDashboard, 1000);
+        }
+
+        function stopMonitoring() {
+            elements.startButton.classList.remove('hidden');
+            elements.stopButton.classList.add('hidden');
+            elements.dashboard.classList.add('hidden');
+            elements.alertContainer.innerHTML = '';
+            elements.liveIndicator.innerHTML = `<div class="w-3 h-3 bg-gray-300 rounded-full"></div><span>Offline</span>`;
+            clearInterval(monitoringInterval);
+            monitoringInterval = null;
+            Object.values(charts).forEach(chart => chart.destroy());
+            elements.recommendationsContainer.innerHTML = `<p class="text-gray-500">Monitoring has stopped. Press "Begin" to start again.</p>`;
+        }
+
+        function toggleChatWindow() {
+            isChatOpen = !isChatOpen;
+            if (isChatOpen) {
+                elements.chatWindow.classList.remove('hidden');
+                setTimeout(() => { elements.chatWindow.classList.remove('translate-y-4', 'opacity-0'); }, 10);
+                if (elements.chatMessages.children.length === 0) displayMessage("Hello! I'm the CardioSense assistant. Ask me about your status.", 'bot');
+            } else {
+                elements.chatWindow.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => { elements.chatWindow.classList.add('hidden'); }, 300);
+            }
+        }
+
+        function displayMessage(message, sender) {
+            const bubble = document.createElement('div');
+            bubble.className = `w-fit max-w-xs p-3 rounded-2xl mb-2`;
+            if (sender === 'user') bubble.classList.add('chat-bubble-user', 'self-end', 'rounded-br-sm', 'ml-auto');
+            else bubble.classList.add('chat-bubble-bot', 'self-start', 'rounded-tl-sm', 'mr-auto');
+            bubble.innerHTML = message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+            elements.chatMessages.appendChild(bubble);
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+            return bubble;
+        }
+
+        function getRiskTone(riskText) {
+            const risk = parseInt(riskText);
+            if (risk < 30) return "reassuring and positive";
+            if (risk < 60) return "cautious and advisory";
+            return "urgent and safety-focused";
+        }
+
+        async function getBotResponse(userInput) {
+            // Handle greetings politely
+            if (isGreeting(userInput)) {
+                if (monitoringInterval) {
+                    return "Hello! 👋 Would you like me to review your latest heart health readings or answer any specific question?";
+                } else {
+                    return "Hello! 👋 You can start monitoring anytime, or ask me general questions about heart health.";
+                }
+            }
+
+            if (!monitoringInterval) {
+                const lowerInput = userInput.toLowerCase();
+                if (['hrv', 'heart rate', 'spo2', 'ecg', 'risk'].some(kw => lowerInput.includes(kw))) {
+                    return "Please start the monitoring first so I can access your current health data!";
+                }
+            }
+            const systemPrompt = `You are CardioSense, an AI-powered cardiac health assistant.Use calm, medical, and reassuring language.Interpret heart rate, SpO2, HRV, and risk score.Mention stability or trends when possible.Do NOT diagnose diseases.If risk is low, reassure.If risk is moderate, advise caution.If risk is high, be safety-focused.Always recommend consulting a healthcare professional.Limit responses to 3–5 sentences.`;
+            let dataContext = "The user is not currently monitoring their data.";
+
+            if (monitoringInterval) {
+                const hrTrend = getTrendStatus(trendMemory.hr);
+                const spo2Trend = getTrendStatus(trendMemory.spo2);
+                const hrvTrend = getTrendStatus(trendMemory.hrv);
+
+                dataContext = `
+            Current cardiac data:
+            - Heart Rate: ${elements.hrValue.textContent} BPM (${hrTrend})
+            - SpO2: ${elements.spo2Value.textContent}% (${spo2Trend})
+            - HRV: ${elements.hrvValue.textContent} ms (${hrvTrend})
+            - Risk Score: ${elements.riskValue.textContent}
+            `;
+            }
+
+            const tone = monitoringInterval
+                ? getRiskTone(elements.riskValue.textContent)
+                : "neutral";
+
+
+            const userQuery = `${dataContext}\n\nUser Question: "${userInput}"`;
+
+            const MAX_RETRIES = 3;
+            for (let i = 0; i < MAX_RETRIES; i++) {
+                try {
+                    const payload = {
+                        contents: [{ parts: [{ text: userQuery }] }],
+                        tools: [{ "google_search": {} }],
+                        systemInstruction: {
+                            parts: [{
+                                text: systemPrompt + `\nUse a ${tone} tone in your response.`
+                            }]
+                        },
+                    };
+                    const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`API failed`);
+                    const result = await response.json();
+                    return result.candidates?.[0]?.content?.parts?.[0]?.text || "I'm having trouble responding.";
+                } catch (error) {
+                    if (i === MAX_RETRIES - 1) return "Sorry, I can't connect to AI right now.";
+                    await new Promise(res => setTimeout(res, 1000));
+                }
+            }
+        }
+
+        elements.chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userInput = elements.chatInput.value.trim();
+            if (userInput) {
+                displayMessage(userInput, 'user');
+                elements.chatInput.value = '';
+                const thinkingBubble = displayMessage("Thinking...", 'bot');
+                const botResponse = await getBotResponse(userInput);
+                thinkingBubble.innerHTML = botResponse.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+
+                // SPEAK the response
+                speak(botResponse);
+            }
+        });
+
+        elements.startButton.onclick = startMonitoring;
+        elements.stopButton.onclick = stopMonitoring;
+        elements.liveViewBtn.onclick = () => {
+            elements.liveViewBtn.classList.add('active');
+            elements.historyViewBtn.classList.remove('active');
+            elements.liveDashboard.classList.remove('hidden');
+            elements.historicalDashboard.classList.add('hidden');
+            if (monitoringInterval) initializeCharts();
+        };
+        elements.historyViewBtn.onclick = () => {
+            elements.historyViewBtn.classList.add('active');
+            elements.liveViewBtn.classList.remove('active');
+            elements.historicalDashboard.classList.remove('hidden');
+            elements.liveDashboard.classList.add('hidden');
+        };
+        elements.chatToggleButton.onclick = toggleChatWindow;
+        elements.closeChatButton.onclick = toggleChatWindow;
+
+    </script>
+</body>
+
+</html>
