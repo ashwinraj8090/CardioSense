@@ -13,7 +13,6 @@ This project is currently **under active development**.
 - Core dashboard UI is implemented
 - Monitoring logic currently uses mock data
 - AI chatbot integration is in progress
-- Codebase is being refined and modularized
 
 ---
 
