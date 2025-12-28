@@ -182,6 +182,12 @@
                     <input id="new-password" type="password" required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
                         placeholder="Create Password">
+                    <div class="text-left">
+                        <label class="block text-gray-700 text-xs font-bold mb-1 ml-1" for="new-dob">DATE OF
+                            BIRTH</label>
+                        <input id="new-dob" type="date" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400">
+                    </div>
                     <div class="flex items-start">
                         <div class="flex items-center h-5">
                             <input id="terms" type="checkbox" required
@@ -208,23 +214,56 @@
     </div>
 
     <div id="app-container" class="hidden">
-        <header class="bg-white shadow-sm sticky top-0 z-10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <header class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <svg class="w-10 h-10 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                    </svg>
-                    <h1 class="text-2xl font-bold text-gray-900">CardioSense</h1>
+                    <div class="bg-red-50 p-2 rounded-lg">
+                        <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">CardioSense</h1>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <span id="patient-name" class="text-sm font-medium">Patient:</span>
+
+                <div class="flex items-center space-x-3">
+                    <p id="patient-name" class="hidden"></p>
+
                     <div id="patient-initials"
-                        class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-600">
-                        --</div>
+                        class="w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center font-bold shadow-sm ring-2 ring-red-50">
+                        --
+                    </div>
+
+                    <div class="relative ml-2">
+                        <button id="menu-button"
+                            class="flex items-center justify-center w-8 h-8 hover:bg-gray-100 rounded-md transition-all text-gray-500">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+
+                        <div id="dropdown-menu"
+                            class="hidden absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-50 overflow-hidden">
+                            <button id="nav-clear-history"
+                                class="w-full text-left px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Clear History
+                            </button>
+                            <button id="logout-btn"
+                                class="w-full text-left px-3 py-2 text-xs font-bold text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Log Out
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
         </header>
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -242,7 +281,7 @@
             </div>
 
             <div id="dashboard" class="hidden">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
                     <div class="metric-card p-4 md:p-6 text-center">
                         <h2 class="text-md font-semibold text-gray-600">Heart Rate</h2>
                         <p class="text-4xl md:text-5xl font-bold mt-2" id="hr-value">--</p>
@@ -258,92 +297,99 @@
                         <p class="text-4xl md:text-5xl font-bold mt-2" id="hrv-value">--</p>
                         <p class="text-xs text-gray-500 mt-1">ms</p>
                     </div>
+
+                    <div class="metric-card p-4 md:p-6 text-center">
+                        <h2 class="text-md font-semibold text-gray-600">Blood Pressure</h2>
+                        <p class="text-4xl md:text-5xl font-bold mt-2" id="bp-value">--/--</p>
+                        <p class="text-xs text-gray-500 mt-1">mmHg (PAT Est.)</p>
+                    </div>
+
                     <div id="risk-card" class="metric-card p-4 md:p-6 text-center border-2 border-transparent">
                         <h2 class="text-md font-semibold text-gray-600">Heart Attack Risk</h2>
                         <p class="text-4xl md:text-5xl font-bold mt-2 risk-value" id="risk-value">--</p>
                         <p class="text-xs text-gray-500 mt-1">Prediction</p>
                     </div>
                 </div>
+            </div>
 
-                <div class="flex justify-center mb-6 bg-gray-200 rounded-full p-1 max-w-sm mx-auto">
-                    <button id="live-view-btn"
-                        class="view-toggle-btn active w-full py-2 px-4 rounded-full font-semibold">Live Monitor</button>
-                    <button id="history-view-btn"
-                        class="view-toggle-btn w-full py-2 px-4 rounded-full font-semibold">Historical Data</button>
-                </div>
+            <div class="flex justify-center mb-6 bg-gray-200 rounded-full p-1 max-w-sm mx-auto">
+                <button id="live-view-btn"
+                    class="view-toggle-btn active w-full py-2 px-4 rounded-full font-semibold">Live Monitor</button>
+                <button id="history-view-btn"
+                    class="view-toggle-btn w-full py-2 px-4 rounded-full font-semibold">Historical Data</button>
+            </div>
 
-                <div id="live-dashboard">
-                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                        <div class="lg:col-span-3 metric-card p-6 h-96">
-                            <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-xl font-semibold text-gray-700">Live ECG & PPG Signals</h2>
-                                <div id="live-indicator" class="flex items-center space-x-2">
-                                    <div class="w-3 h-3 bg-gray-300 rounded-full"></div><span>Connecting...</span>
-                                </div>
-                            </div>
-                            <canvas id="ecgChart"></canvas>
-                        </div>
-                        <div class="lg:col-span-2 metric-card p-6 h-96">
-                            <h2 class="text-xl font-semibold text-gray-700 mb-4">AI Recommendations</h2>
-                            <div id="recommendations-container" class="space-y-4 overflow-y-auto h-72 pr-2">
-                                <p class="text-gray-500">Begin monitoring to receive health insights...</p>
+            <div id="live-dashboard">
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                    <div class="lg:col-span-3 metric-card p-6 h-96">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-gray-700">Live ECG & PPG Signals</h2>
+                            <div id="live-indicator" class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-gray-300 rounded-full"></div><span>Connecting...</span>
                             </div>
                         </div>
+                        <canvas id="ecgChart"></canvas>
                     </div>
-                </div>
-
-                <div id="historical-dashboard" class="hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="metric-card p-6 h-80">
-                            <h2 class="text-xl font-semibold text-gray-700 mb-4">Heart Rate (Last 24 Hours)</h2><canvas
-                                id="hrHistoryChart"></canvas>
-                        </div>
-                        <div class="metric-card p-6 h-80">
-                            <h2 class="text-xl font-semibold text-gray-700 mb-4">SpO2 (Last 7 Days)</h2><canvas
-                                id="spo2HistoryChart"></canvas>
+                    <div class="lg:col-span-2 metric-card p-6 h-96">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">AI Recommendations</h2>
+                        <div id="recommendations-container" class="space-y-4 overflow-y-auto h-72 pr-2">
+                            <p class="text-gray-500">Begin monitoring to receive health insights...</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
 
-        <div id="chatbot-container" class="fixed bottom-6 right-6 z-30">
-            <div id="chat-window"
-                class="hidden absolute bottom-20 right-0 w-80 h-96 bg-white rounded-2xl shadow-2xl flex flex-col transform translate-y-4 opacity-0">
-                <div class="p-4 bg-red-500 text-white rounded-t-2xl flex justify-between items-center">
-                    <h3 class="font-bold">CardioSense Assistant</h3>
-                    <button id="close-chat-btn" class="text-white text-2xl leading-none">&times;</button>
+            <div id="historical-dashboard" class="hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="metric-card p-6 h-80">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">Heart Rate (Last 24 Hours)</h2><canvas
+                            id="hrHistoryChart"></canvas>
+                    </div>
+                    <div class="metric-card p-6 h-80">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">SpO2 (Last 7 Days)</h2><canvas
+                            id="spo2HistoryChart"></canvas>
+                    </div>
                 </div>
-                <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 flex flex-col"></div>
-                <form id="chat-form" class="p-4 border-t border-gray-200 flex items-center gap-2">
-                    <button type="button" id="voice-input-btn"
-                        class="text-gray-400 hover:text-red-500 transition-colors">
-                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-                            <path
-                                d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
-                        </svg>
-                    </button>
-                    <input type="text" id="chat-input"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
-                        placeholder="Ask a question...">
-                    <button type="submit" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
-                            </path>
-                        </svg>
-                    </button>
-                </form>
             </div>
-            <button id="chat-toggle-btn"
-                class="bg-red-500 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center transform hover:scale-110 transition-transform">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
-                    </path>
-                </svg>
-            </button>
+    </div>
+    </main>
+
+    <div id="chatbot-container" class="fixed bottom-6 right-6 z-30">
+        <div id="chat-window"
+            class="hidden absolute bottom-20 right-0 w-80 h-96 bg-white rounded-2xl shadow-2xl flex flex-col transform translate-y-4 opacity-0">
+            <div class="p-4 bg-red-500 text-white rounded-t-2xl flex justify-between items-center">
+                <h3 class="font-bold">CardioSense Assistant</h3>
+                <button id="close-chat-btn" class="text-white text-2xl leading-none">&times;</button>
+            </div>
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 flex flex-col"></div>
+            <form id="chat-form" class="p-4 border-t border-gray-200 flex items-center gap-2">
+                <button type="button" id="voice-input-btn" class="text-gray-400 hover:text-red-500 transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                        <path
+                            d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                    </svg>
+                </button>
+                <input type="text" id="chat-input"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                    placeholder="Ask a question...">
+                <button type="submit" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                        </path>
+                    </svg>
+                </button>
+            </form>
         </div>
+        <button id="chat-toggle-btn"
+            class="bg-red-500 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center transform hover:scale-110 transition-transform">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                </path>
+            </svg>
+        </button>
+    </div>
     </div>
 
     <script>
@@ -363,6 +409,8 @@
             hrValue: document.getElementById('hr-value'),
             spo2Value: document.getElementById('spo2-value'),
             hrvValue: document.getElementById('hrv-value'),
+            dobInput: document.getElementById('new-dob'), // NEW
+            bpValue: document.getElementById('bp-value'), // NEW
             riskCard: document.getElementById('risk-card'),
             riskValue: document.getElementById('risk-value'),
             liveIndicator: document.getElementById('live-indicator'),
@@ -384,22 +432,96 @@
             voiceBtn: document.getElementById('voice-input-btn')
         };
 
+        // NEW: Age Calculation Function
+        function calculateAge(dobString) {
+            const today = new Date();
+            const birthDate = new Date(dobString);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
         let monitoringInterval;
         let charts = {};
         let isChatOpen = false;
         let chatHistoryData = {};
 
-        // ===== Trend Memory (NEW - does NOT affect UI) =====
         let trendMemory = {
             hr: [],
             spo2: [],
             hrv: []
         };
 
-        let hrHistory = JSON.parse(localStorage.getItem("hrHistory")) || [];
-        let spo2History = JSON.parse(localStorage.getItem("spo2History")) || [];
+        let hrHistory = [];
+        let spo2History = [];
 
-        // ===== Greeting Detection (NEW) =====
+        let latestVitalsCache = null;
+
+
+        // --- Signal Processing & Clinical States ---
+        let lastRPeakTime = 0;
+        let lastPPGPeakTime = 0;
+        let rrIntervals = [];
+        let filteredECG = 0;
+        const alpha = 0.3; // Low-pass filter smoothing factor
+
+        // Calculates real HRV using RMSSD (Root Mean Square of Successive Differences)
+        function calculateRealHRV(rawECGValue) {
+            filteredECG = (alpha * rawECGValue) + ((1 - alpha) * filteredECG);
+            const now = Date.now();
+            const threshold = 2500;
+
+            if (filteredECG > threshold && (now - lastRPeakTime) > 400) {
+                if (lastRPeakTime > 0) {
+                    rrIntervals.push(now - lastRPeakTime);
+                    if (rrIntervals.length > 20) rrIntervals.shift();
+                }
+                lastRPeakTime = now;
+            }
+
+            // MISTAKE FIX: Do not return '45'. Return null if not ready.
+            if (rrIntervals.length < 5) return null;
+
+            let sumDiffSq = 0;
+            for (let i = 1; i < rrIntervals.length; i++) {
+                sumDiffSq += Math.pow(rrIntervals[i] - rrIntervals[i - 1], 2);
+            }
+            return Math.sqrt(sumDiffSq / (rrIntervals.length - 1)).toFixed(1);
+        }
+
+        // Estimates Blood Pressure using Pulse Arrival Time (PAT)
+        function estimateBP(ecgValue, ppgValue) {
+            const now = Date.now();
+
+            // Detect PPG Peak from MAX30100
+            if (ppgValue > 600 && (now - lastPPGPeakTime) > 400) {
+                lastPPGPeakTime = now;
+            }
+
+            // Calculate delay between ECG R-Peak and PPG Pulse Peak
+            const pat = Math.abs(lastPPGPeakTime - lastRPeakTime);
+
+            // Inverse Relationship: Higher pressure results in faster pulse travel (lower PAT)
+            let systolic = 120 + (250 - pat) * 0.15;
+
+            // Limit to human physiological ranges
+            systolic = Math.max(95, Math.min(175, systolic));
+            let diastolic = systolic * 0.65;
+
+            return {
+                sys: Math.round(systolic),
+                dia: Math.round(diastolic)
+            };
+        }
+        function loadUserHistory() {
+            hrHistory = JSON.parse(localStorage.getItem(`hrHistory_${currentUsername}`)) || [];
+            spo2History = JSON.parse(localStorage.getItem(`spo2History_${currentUsername}`)) || [];
+        }
+
+        // ===== Greeting Detection =====
         function isGreeting(text) {
             const greetings = [
                 "hi", "hii", "hai", "hello", "hey",
@@ -408,7 +530,6 @@
             const lower = text.toLowerCase().trim();
             return greetings.includes(lower);
         }
-
 
         function getTrendStatus(values) {
             if (values.length < 5) return "stable so far";
@@ -419,8 +540,7 @@
                 : "showing noticeable variation";
         }
 
-
-        const API_KEY = "YOUR_API_KEY_HERE";
+        const API_KEY = "AIzaSyA7foYGkurzYTYOuuugggDcXwSI6_mskv4";
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
         const MODEL_NAME = "gemini-2.5-flash-preview-09-2025";
 
@@ -482,8 +602,14 @@
             e.preventDefault();
             const user = document.getElementById('new-username').value.trim();
             const pass = document.getElementById('new-password').value.trim();
-            if (user && pass) {
-                localStorage.setItem(`user_${user}`, pass);
+            const dob = elements.dobInput.value; // Get the DOB from the new input
+
+            if (user && pass && dob) {
+                // Updated: Store as a JSON object to keep the DOB
+                localStorage.setItem(`user_${user}`, JSON.stringify({
+                    password: pass,
+                    dob: dob
+                }));
                 document.getElementById('signup-success').classList.remove('hidden');
                 setTimeout(() => {
                     elements.signupForm.classList.add('hidden');
@@ -497,21 +623,40 @@
             e.preventDefault();
             const username = elements.usernameInput.value.trim();
             const password = elements.passwordInput.value.trim();
-            const storedPass = localStorage.getItem(`user_${username}`);
-            if (storedPass && storedPass === password) {
-                elements.loginError.classList.add('hidden');
-                elements.patientName.textContent = `Patient: ${username}`;
-                const initials = username.split(' ').map(n => n[0]).join('').toUpperCase();
-                elements.patientInitials.textContent = initials.substring(0, 2);
-                elements.loginPage.classList.add('fade-out');
-                setTimeout(() => {
-                    elements.loginPage.classList.add('hidden');
-                    elements.appContainer.classList.remove('hidden');
-                }, 500);
-                document.title = "CardioSense - Dashboard";
+
+            // Get the stored string
+            const storedData = localStorage.getItem(`user_${username}`);
+
+            if (storedData) {
+                // PARSE the JSON string back into an object
+                const userData = JSON.parse(storedData);
+
+                // Compare the input password with the stored password field
+                if (userData.password === password) {
+                    elements.loginError.classList.add('hidden');
+
+                    // Set currentUsername for the dashboard to use later
+                    currentUsername = username;
+
+                    loadUserHistory();
+
+                    elements.patientName.textContent = `Patient: ${username}`;
+                    const initials = username.split(' ').map(n => n[0]).join('').toUpperCase();
+                    elements.patientInitials.textContent = initials.substring(0, 2);
+
+                    elements.loginPage.classList.add('fade-out');
+                    setTimeout(() => {
+                        elements.loginPage.classList.add('hidden');
+                        elements.appContainer.classList.remove('hidden');
+                    }, 500);
+                    document.title = "CardioSense - Dashboard";
+                } else {
+                    elements.loginError.classList.remove('hidden');
+                    elements.loginError.textContent = "Incorrect password.";
+                }
             } else {
                 elements.loginError.classList.remove('hidden');
-                elements.loginError.textContent = "Incorrect username or password.";
+                elements.loginError.textContent = "Username not found.";
             }
         };
 
@@ -555,183 +700,219 @@
         }
 
         function updateRiskCard(risk) {
-            elements.riskValue.textContent = `${risk}%`;
-            elements.riskValue.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500');
-            elements.riskCard.classList.remove('border-green-500', 'border-yellow-500', 'border-red-500');
-            if (risk < 30) {
-                elements.riskValue.classList.add('text-green-500');
-                elements.riskCard.classList.add('border-green-500');
-            } else if (risk < 60) {
-                elements.riskValue.classList.add('text-yellow-500');
-                elements.riskCard.classList.add('border-yellow-500');
+            const riskValueElement = elements.riskValue;
+            const riskCardElement = elements.riskCard;
+
+            // Display the percentage from Flask
+            riskValueElement.textContent = `${risk}%`;
+
+            // Visual feedback based on risk level
+            riskCardElement.classList.remove('border-green-500', 'border-yellow-500', 'border-red-500');
+
+            if (risk >= 60) {
+                riskCardElement.classList.add('border-red-500');
+                riskValueElement.className = "text-4xl md:text-5xl font-bold mt-2 text-red-600";
+            } else if (risk >= 30) {
+                riskCardElement.classList.add('border-yellow-500');
+                riskValueElement.className = "text-4xl md:text-5xl font-bold mt-2 text-yellow-600";
             } else {
-                elements.riskValue.classList.add('text-red-500');
-                elements.riskCard.classList.add('border-red-500');
+                riskCardElement.classList.add('border-green-500');
+                riskValueElement.className = "text-4xl md:text-5xl font-bold mt-2 text-green-600";
             }
         }
 
         async function updateDashboard() {
             try {
-                const data = mockLiveData();
-                elements.hrValue.textContent = data.heartRate;
-                elements.spo2Value.textContent = `${data.spo2}`;
-                elements.hrvValue.textContent = `${data.hrv}`;
+                // 1. Fetch raw real-time data from your ESP32 via Flask
+                const iotResponse = await fetch("http://localhost:5000/get-vitals");
+                latestVitalsCache = await iotResponse.json();
+                const iotData = latestVitalsCache;
+
+
+                // --- FIX 1: Verify sensor connection before calculating ---
+                if (!iotData || iotData.ecg === 0 || iotData.ppg === 0) {
+                    elements.hrValue.textContent = "--";
+                    elements.spo2Value.textContent = "--";
+                    elements.hrvValue.textContent = "--";
+                    elements.bpValue.textContent = "--/--";
+                    elements.riskValue.textContent = "--";
+                    return; // Exit early if sensors are offline
+                }
+
+                // 2. Derive clinical features using live sensor timing
+                const realHRV = calculateRealHRV(iotData.ecg);
+                const realBP = estimateBP(iotData.ecg, iotData.ppg);
+
+                // --- ADD THE MISTAKE FIX HERE ---
+                if (!realHRV || realHRV === null || rrIntervals.length < 5) {
+                    elements.hrValue.textContent = iotData.hr;
+                    elements.spo2Value.textContent = iotData.spo2;
+                    elements.hrvValue.textContent = "--";
+                    elements.bpValue.textContent = "--/--";
+                    elements.riskValue.textContent = "--";
+                    return; // Stop here and wait for more heartbeats
+                }
+                // --------------------------------
+
+                // 3. Get User Profile for Age
+                const userProfile = JSON.parse(localStorage.getItem(`user_${currentUsername}`));
+                if (!userProfile) throw new Error("User profile not found");
+                const age = calculateAge(userProfile.dob);
+
+                // 4. Update UI Cards with valid clinical data
+                elements.hrValue.textContent = iotData.hr;
+                elements.spo2Value.textContent = iotData.spo2;
+                elements.hrvValue.textContent = realHRV;
+                elements.bpValue.textContent = `${realBP.sys}/${realBP.dia}`;
 
                 const now = Date.now();
 
-                // Store HR
-                hrHistory.push({ value: data.heartRate, time: now });
+                // 5. Store History (User-Specific)
+                hrHistory.push({ value: iotData.hr, time: now });
+                spo2History.push({ value: iotData.spo2, time: now });
+                localStorage.setItem(`hrHistory_${currentUsername}`, JSON.stringify(hrHistory));
+                localStorage.setItem(`spo2History_${currentUsername}`, JSON.stringify(spo2History));
 
-                // Store SpO2
-                spo2History.push({ value: data.spo2, time: now });
-
-                // Keep only last 24h HR
-                const DAY = 24 * 60 * 60 * 1000;
-                hrHistory = hrHistory.filter(d => now - d.time <= DAY);
-
-                // Keep only last 7 days SpO2
-                spo2History = spo2History.filter(d => now - d.time <= 7 * DAY);
-
-                localStorage.setItem("hrHistory", JSON.stringify(hrHistory));
-                localStorage.setItem("spo2History", JSON.stringify(spo2History));
-
-
-                // Store values for trend-aware chatbot
-                trendMemory.hr.push(data.heartRate);
-                trendMemory.spo2.push(data.spo2);
-                trendMemory.hrv.push(data.hrv);
+                // 6. Update AI Assistant Memory
+                trendMemory.hr.push(iotData.hr);
+                trendMemory.spo2.push(iotData.spo2);
+                trendMemory.hrv.push(realHRV);
+                if (!trendMemory.bp) trendMemory.bp = [];
+                trendMemory.bp.push(`${realBP.sys}/${realBP.dia}`);
 
                 if (trendMemory.hr.length > 20) {
                     trendMemory.hr.shift();
                     trendMemory.spo2.shift();
                     trendMemory.hrv.shift();
+                    trendMemory.bp.shift();
                 }
 
-                // ===== UPDATE HEART RATE HISTORY CHART =====
-                if (charts.hrHistory) {
-                    charts.hrHistory.data.labels = hrHistory.map(d =>
-                        new Date(d.time).toLocaleTimeString()
-                    );
-                    charts.hrHistory.data.datasets[0].data =
-                        hrHistory.map(d => d.value);
-                    charts.hrHistory.update();
+                // 7. Update Prediction using the 6-Feature Flask API
+                const predictResponse = await fetch("http://localhost:5000/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        hr: parseFloat(iotData.hr),
+                        spo2: parseFloat(iotData.spo2),
+                        hrv: parseFloat(realHRV),
+                        systolic: parseFloat(realBP.sys),
+                        diastolic: parseFloat(realBP.dia),
+                        age: parseInt(age)
+                    })
+                });
+
+                const result = await predictResponse.json();
+
+                // 8. Handle Real-World Predictions and Alerts
+                if (result && result.risk !== undefined) {
+                    updateRiskCard(result.risk);
+
+                    if (result.risk >= 60) {
+                        createAlert("CRITICAL_HR", "Emergency: High cardiac risk detected.");
+                        updateRecommendations("CRITICAL_HR");
+                    } else if (result.risk >= 30) {
+                        createAlert("RISING_RISK_TREND", "Warning: Elevated cardiac risk.");
+                        updateRecommendations("RISING_RISK_TREND");
+                    } else {
+                        elements.alertContainer.innerHTML = "";
+                        updateRecommendations("NORMAL");
+                    }
                 }
-
-                // ===== UPDATE SPO2 HISTORY CHART =====
-                if (charts.spo2History) {
-                    const daily = {};
-
-                    spo2History.forEach(d => {
-                        const day = new Date(d.time).toDateString();
-                        if (!daily[day]) daily[day] = [];
-                        daily[day].push(d.value);
-                    });
-
-                    charts.spo2History.data.labels = Object.keys(daily);
-                    charts.spo2History.data.datasets[0].data =
-                        Object.values(daily).map(arr =>
-                            Math.round(arr.reduce((a, b) => a + b, 0) / arr.length)
-                        );
-
-                    charts.spo2History.update();
-                }
-
-
-                updateRiskCard(data.heartAttackChance);
-                if (data.status !== 'NORMAL') {
-                    createAlert(data.status, recommendations[data.status].split('.')[0] + '.');
-                } else {
-                    elements.alertContainer.innerHTML = '';
-                }
-                updateRecommendations(data.status);
             } catch (error) {
-                console.error("Failed to process simulated data:", error);
+                console.error("IoT Monitoring Cycle Failed:", error);
             }
         }
 
         let anomalyStep = 0;
-        function mockLiveData() {
-            anomalyStep++;
-            let hr = Math.floor(Math.random() * (90 - 65 + 1)) + 65;
-            let spo2 = Math.floor(Math.random() * (99 - 96 + 1)) + 96;
-            let hrv = Math.floor(Math.random() * (100 - 40 + 1)) + 40;
-            let risk = Math.floor(Math.random() * 20) + 10;
-            let status = 'NORMAL';
-            if (anomalyStep % 15 === 0) {
-                hr = Math.floor(Math.random() * (115 - 95 + 1)) + 95;
-                spo2 = Math.floor(Math.random() * (95 - 93 + 1)) + 93;
-                risk = Math.floor(Math.random() * (50 - 30 + 1)) + 30;
-                status = 'LOW_SPO2';
-            }
-            if (anomalyStep % 35 === 0) {
-                hr = Math.floor(Math.random() * (160 - 120 + 1)) + 120;
-                spo2 = Math.floor(Math.random() * (92 - 88 + 1)) + 88;
-                risk = Math.floor(Math.random() * (90 - 60 + 1)) + 60;
-                status = 'CRITICAL_HR';
-            }
-            return { heartRate: hr, spo2: spo2, hrv: hrv, heartAttackChance: risk, status: status };
-
-        }
-
-        //function generateAndStoreHistoryData() {
-        //chatHistoryData.hrLast24Hours = Array.from({ length: 24 }, () => Math.floor(Math.random() * (110 - 60)) + 60);
-        //chatHistoryData.spo2Last7Days = Array.from({ length: 7 }, () => Math.floor(Math.random() * (99 - 95)) + 95);
-        //}
 
         function initializeCharts() {
-            Object.values(charts).forEach(chart => chart.destroy());
+            // 1. Destroy old chart instances to prevent memory leaks
+            Object.values(charts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+
             const ecgCtx = elements.ecgCanvas.getContext('2d');
             charts.ecg = new Chart(ecgCtx, {
                 type: 'line',
                 data: {
                     datasets: [
-                        { label: 'ECG Signal', borderColor: 'rgb(239, 68, 68)', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderWidth: 2, pointRadius: 0, data: [], fill: false },
-                        { label: 'PPG Signal', borderColor: 'rgb(59, 130, 246)', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, pointRadius: 0, data: [], fill: false }
+                        {
+                            label: 'ECG (AD8232)',
+                            borderColor: 'rgb(239, 68, 68)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            data: [],
+                            fill: false,
+                            tension: 0.4 // Smooths the line
+                        },
+                        {
+                            label: 'PPG (MAX30100)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            data: [],
+                            fill: false,
+                            tension: 0.4
+                        }
                     ]
                 },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
+                    responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         x: {
-                            type: 'realtime', realtime: {
-                                duration: 20000, refresh: 1000, delay: 1000, onRefresh: chart => {
+                            type: 'realtime',
+                            realtime: {
+                                duration: 15000, // Show 15 seconds of data
+                                refresh: 100,    // Higher refresh rate for smooth IoT signals
+                                delay: 1000,
+                                onRefresh: function (chart) {
+                                    if (!latestVitalsCache) return;
+
                                     const now = Date.now();
-                                    const period = 500 + Math.random() * 100;
-                                    const timeFactor = (now % period) / period;
-                                    let ecgValue = 0;
-                                    if (timeFactor < 0.1) ecgValue = Math.sin(timeFactor * 10 * Math.PI) * 0.2;
-                                    else if (timeFactor > 0.15 && timeFactor < 0.2) ecgValue = Math.sin((timeFactor - 0.15) * 20 * Math.PI) * 1.0;
-                                    else if (timeFactor > 0.3 && timeFactor < 0.4) ecgValue = Math.sin((timeFactor - 0.3) * 10 * Math.PI) * 0.3;
-                                    const noise = (Math.random() - 0.5) * 0.05;
-                                    const ppgDelay = 100;
-                                    const ppgFactor = ((now - ppgDelay) % period) / period;
-                                    const ppgValue = Math.max(0, Math.sin(ppgFactor * 2 * Math.PI)) * 0.8;
-                                    const ppgNoise = (Math.random() - 0.5) * 0.03;
-                                    chart.data.datasets[0].data.push({ x: now, y: ecgValue + noise });
-                                    chart.data.datasets[1].data.push({ x: now, y: ppgValue + ppgNoise });
+
+                                    filteredECG = (alpha * latestVitalsCache.ecg) +
+                                        ((1 - alpha) * filteredECG);
+
+                                    chart.data.datasets[0].data.push({
+                                        x: now,
+                                        y: filteredECG
+                                    });
+
+                                    chart.data.datasets[1].data.push({
+                                        x: now,
+                                        y: latestVitalsCache.ppg
+                                    });
                                 }
+
                             }
                         },
-                        y: { min: -1.5, max: 1.5, ticks: { display: false } }
+                        y: {
+                            // Adjust these ranges based on your sensor's output
+                            min: 0,
+                            max: 4095,
+                            ticks: { display: false },
+                            grid: { color: '#f3f4f6' }
+                        }
                     },
-                    plugins: { legend: { display: true, position: 'top' }, tooltip: { enabled: false } },
-                    elements: { line: { tension: 0.2 } }
+                    plugins: {
+                        legend: { display: true, position: 'top' },
+                        tooltip: { enabled: false }
+                    }
                 }
             });
-            const hrHistoryCtx = elements.hrHistoryCanvas.getContext('2d');
-            const hrLabels = hrHistory.map(d =>
-                new Date(d.time).toLocaleTimeString()
-            );
-            const hrValues = hrHistory.map(d => d.value);
 
+            // --- History Charts (Remain mostly the same, but use currentUsername) ---
+            const hrHistoryCtx = elements.hrHistoryCanvas.getContext('2d');
             charts.hrHistory = new Chart(hrHistoryCtx, {
                 type: 'line',
                 data: {
-                    labels: hrLabels,
+                    labels: hrHistory.map(d => new Date(d.time).toLocaleTimeString()),
                     datasets: [{
                         label: 'BPM',
-                        data: hrValues,
+                        data: hrHistory.map(d => d.value),
                         borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         tension: 0.4,
                         fill: true
                     }]
@@ -739,6 +920,7 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
+            // SpO2 history chart logic using spo2History variable
             const spo2HistoryCtx = elements.spo2HistoryCanvas.getContext('2d');
             const spo2Daily = {};
             spo2History.forEach(d => {
@@ -747,56 +929,20 @@
                 spo2Daily[day].push(d.value);
             });
 
-            const spo2Labels = Object.keys(spo2Daily);
-            const spo2Values = spo2Labels.map(day =>
-                Math.round(
-                    spo2Daily[day].reduce((a, b) => a + b, 0) / spo2Daily[day].length
-                )
-            );
-
             charts.spo2History = new Chart(spo2HistoryCtx, {
                 type: 'bar',
                 data: {
-                    labels: spo2Labels,
+                    labels: Object.keys(spo2Daily),
                     datasets: [{
                         label: '%',
-                        data: spo2Values,
+                        data: Object.keys(spo2Daily).map(day =>
+                            Math.round(spo2Daily[day].reduce((a, b) => a + b, 0) / spo2Daily[day].length)
+                        ),
                         backgroundColor: 'rgb(34, 197, 94)'
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
-        }
-
-        function startMonitoring() {
-            elements.startButton.classList.add('hidden');
-            elements.stopButton.classList.remove('hidden');
-            elements.dashboard.classList.remove('hidden');
-            elements.liveIndicator.innerHTML = `<div class="w-3 h-3 bg-red-500 rounded-full pulse-live"></div><span>Live</span>`;
-            //generateAndStoreHistoryData();
-            initializeCharts();
-            updateDashboard();
-            monitoringInterval = setInterval(updateDashboard, 1000);
-        }
-
-        function stopMonitoring() {
-            elements.startButton.classList.remove('hidden');
-            elements.stopButton.classList.add('hidden');
-            elements.dashboard.classList.add('hidden');
-            elements.alertContainer.innerHTML = '';
-            elements.liveIndicator.innerHTML = `<div class="w-3 h-3 bg-gray-300 rounded-full"></div><span>Offline</span>`;
-            clearInterval(monitoringInterval);
-            monitoringInterval = null;
-            Object.values(charts).forEach(chart => chart.destroy());
-            elements.recommendationsContainer.innerHTML = `<p class="text-gray-500">Monitoring has stopped. Press "Begin" to start again.</p>`;
         }
 
         function toggleChatWindow() {
@@ -823,7 +969,7 @@
         }
 
         function getRiskTone(riskText) {
-            const risk = parseInt(riskText);
+            const risk = parseFloat(riskText);
             if (risk < 30) return "reassuring and positive";
             if (risk < 60) return "cautious and advisory";
             return "urgent and safety-focused";
@@ -908,8 +1054,67 @@
             }
         });
 
-        elements.startButton.onclick = startMonitoring;
-        elements.stopButton.onclick = stopMonitoring;
+        // --- UNIFIED START BUTTON LOGIC ---
+        // Unified Start Monitoring Logic
+        elements.startButton.onclick = () => {
+            // 1. Get user data for the confirmation popup
+            const userData = JSON.parse(localStorage.getItem(`user_${currentUsername}`));
+            if (!userData) {
+                alert("Error: User profile not found. Please log in again.");
+                return;
+            }
+            const age = calculateAge(userData.dob);
+
+            // 2. Multi-User Confirmation
+            if (confirm(`Confirming Profile:\nPatient: ${currentUsername}\nCalculated Age: ${age}\n\nIs this correct?`)) {
+
+                // 3. UI Transition
+                elements.startButton.classList.add('hidden');
+                elements.stopButton.classList.remove('hidden');
+                elements.dashboard.classList.remove('hidden');
+                elements.liveIndicator.innerHTML = `<div class="w-3 h-3 bg-red-500 rounded-full pulse-live"></div><span>Live</span>`;
+
+                // 4. Initialize real-time components
+                initializeCharts();
+
+                // 5. Start the cycle
+                updateDashboard(); // Run once immediately so data appears instantly
+                monitoringInterval = setInterval(updateDashboard, 1000); // Then repeat every second
+            } else {
+                alert("Please logout and sign in with the correct profile.");
+            }
+        };
+        elements.stopButton.onclick = () => {
+            // 1. Stop the polling interval
+            clearInterval(monitoringInterval);
+            monitoringInterval = null;
+
+            // 2. Clear "Clinical Memory" (Mathematics Scratchpad)
+            // This prevents old heartbeats from affecting new sessions
+            rrIntervals = [];
+            lastRPeakTime = 0;
+            lastPPGPeakTime = 0;
+
+            // 3. Reset Signal Processing variables
+            filteredECG = 0;
+            latestVitalsCache = null;
+
+            // 4. Update UI to Offline state
+            elements.startButton.classList.remove('hidden');
+            elements.stopButton.classList.add('hidden');
+            elements.dashboard.classList.add('hidden'); // Hides the old metric cards
+
+            // 5. Reset the Live Indicator
+            elements.liveIndicator.innerHTML = `
+        <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+        <span>Offline</span>
+    `;
+
+            // 6. Optional: Provide a summary in the recommendations box
+            elements.recommendationsContainer.innerHTML = `
+        <p class="text-gray-500 italic">Monitoring session ended. History has been saved.</p>
+    `;
+        };
         elements.liveViewBtn.onclick = () => {
             elements.liveViewBtn.classList.add('active');
             elements.historyViewBtn.classList.remove('active');
@@ -926,6 +1131,56 @@
         elements.chatToggleButton.onclick = toggleChatWindow;
         elements.closeChatButton.onclick = toggleChatWindow;
 
+        // --- MENU TOGGLE LOGIC ---
+        const menuButton = document.getElementById('menu-button');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+
+        menuButton.onclick = (e) => {
+            e.stopPropagation(); // Prevents immediate closing
+            dropdownMenu.classList.toggle('hidden');
+        };
+
+        // Close menu if user clicks anywhere else on the screen
+        window.onclick = () => {
+            if (!dropdownMenu.classList.contains('hidden')) {
+                dropdownMenu.classList.add('hidden');
+            }
+        };
+        // --- LOGOUT LOGIC ---
+        document.getElementById('logout-btn').onclick = () => {
+            if (confirm("Are you sure you want to log out?")) {
+                // Stop the interval directly if it is running
+                if (monitoringInterval) {
+                    clearInterval(monitoringInterval);
+                    monitoringInterval = null;
+                }
+
+                currentUsername = null;
+                elements.appContainer.classList.add('hidden');
+                elements.loginPage.classList.remove('hidden', 'fade-out');
+                elements.loginForm.reset();
+
+                // Reset the dashboard view for the next user
+                elements.dashboard.classList.add('hidden');
+                elements.startButton.classList.remove('hidden');
+                elements.stopButton.classList.add('hidden');
+
+                document.title = "CardioSense - Login";
+            }
+        };
+
+        // --- CLEAR HISTORY LOGIC ---
+        document.getElementById('nav-clear-history').onclick = () => {
+            if (confirm(`Permanently delete all records for ${currentUsername}?`)) {
+                localStorage.removeItem(`hrHistory_${currentUsername}`);
+                localStorage.removeItem(`spo2History_${currentUsername}`);
+                hrHistory = [];
+                spo2History = [];
+                if (charts.hrHistory) charts.hrHistory.update();
+                if (charts.spo2History) charts.spo2History.update();
+                alert("History cleared.");
+            }
+        };
     </script>
 </body>
 
