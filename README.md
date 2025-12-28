@@ -1,53 +1,5 @@
 # 🫀 CardioSense
 
-CardioSense is a web-based health monitoring dashboard focused on visualizing cardiac parameters such as Heart Rate, SpO₂, and HRV, along with AI-assisted health insights.
+CardioSense is an end-to-end **AI-assisted cardiovascular monitoring system** that integrates IoT sensor data, machine learning–based risk prediction, and a real-time web dashboard for health visualization.
 
-This project is currently **under active development**.
-
----
-
-## 🚧 Project Status
-
-**Work in Progress**
-
-- Core dashboard UI is implemented
-- Monitoring logic currently uses mock data
-- AI chatbot integration is in progress
-
----
-
-## 🔧 Current Focus
-
-- Improving dashboard stability
-- Refining data visualization
-- Preparing for AI-based risk analysis
-- Laying groundwork for real-time IoT integration
-
----
-
-## 📡 Future Scope
-
-- Real-time data integration from IoT / wearable devices
-- Machine Learning–based cardiac risk prediction
-- Backend integration for secure API handling
-
----
-
-## 🛠️ Tech Stack
-
-- HTML, Tailwind CSS, JavaScript
-- Chart.js
-- AI API (key not included)
-
----
-
-## 🔐 API Key Note
-
-AI API keys are **not included** in this repository.  
-Developers must insert their own key locally for testing.
-
----
-
-## 👨‍💻 Author
-
-Ashwin Raj
+The system is designed as a **research-grade prototype** focusing on preventive cardiac health monitoring.
