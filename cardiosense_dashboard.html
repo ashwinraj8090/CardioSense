@@ -554,19 +554,36 @@
             recognition.interimResults = false;
 
             elements.voiceBtn.onclick = () => {
-                recognition.start();
-                elements.voiceBtn.classList.add('mic-active');
+                try {
+                    recognition.start();
+                    elements.voiceBtn.classList.add('mic-active');
+                } catch (e) {
+                    console.error("Recognition already started", e);
+                }
             };
 
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
                 elements.chatInput.value = transcript;
-                elements.voiceBtn.classList.remove('mic-active');
+                elements.voiceBtn.classList.remove('mic-active'); // Returns icon to black
                 elements.chatForm.dispatchEvent(new Event('submit'));
             };
 
-            recognition.onerror = () => {
-                elements.voiceBtn.classList.remove('mic-active');
+            // --- NEW: Force reset when silence is detected ---
+            recognition.onspeechend = () => {
+                recognition.stop();
+                elements.voiceBtn.classList.remove('mic-active'); // Returns icon to black
+            };
+
+            // --- UPDATED: Detailed Error Handling ---
+            recognition.onerror = (event) => {
+                console.error("Speech Recognition Error:", event.error);
+                elements.voiceBtn.classList.remove('mic-active'); // Returns icon to black
+
+                // Alert the user if the hardware is specifically failing
+                if (event.error === 'no-speech') {
+                    console.warn("No sound detected. Check your microphone hardware.");
+                }
             };
         } else {
             elements.voiceBtn.style.display = 'none';
@@ -577,9 +594,19 @@
          */
         function speak(text) {
             if ('speechSynthesis' in window) {
-                // Strip HTML tags for cleaner speech
-                const cleanText = text.replace(/<\/?[^>]+(>|$)/g, "");
+                // 1. Strip HTML tags (existing logic)
+                let cleanText = text.replace(/<\/?[^>]+(>|$)/g, "");
+
+                // 2. NEW: Strip Emojis and special symbols
+                // This regex targets the unicode ranges used by emojis
+                cleanText = cleanText.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+
                 const utterance = new SpeechSynthesisUtterance(cleanText);
+
+                // Optional: Adjust pitch/rate for a more natural medical assistant voice
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+
                 window.speechSynthesis.speak(utterance);
             }
         }
@@ -1038,18 +1065,28 @@
             }
         }
 
+        // --- 3. The "Both Ways" Submit Listener ---
         elements.chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // MANUAL OVERRIDE: If you click the tick while mic is red, force it to stop
+            if (typeof recognition !== 'undefined') {
+                try { recognition.stop(); } catch (err) { }
+                elements.voiceBtn.classList.remove('mic-active');
+            }
+
             const userInput = elements.chatInput.value.trim();
             if (userInput) {
                 displayMessage(userInput, 'user');
                 elements.chatInput.value = '';
                 const thinkingBubble = displayMessage("Thinking...", 'bot');
+
+                // Fetch from Flask AI
                 const botResponse = await getBotResponse(userInput);
+
                 thinkingBubble.innerHTML = botResponse.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
                 elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
 
-                // SPEAK the response
                 speak(botResponse);
             }
         });
