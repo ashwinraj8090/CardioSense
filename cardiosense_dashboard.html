@@ -540,7 +540,7 @@
                 : "showing noticeable variation";
         }
 
-        const API_KEY = "YOU_API_KEY_HERE";
+        const API_KEY = "YOUR_API_KEY_HERE";
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
         const MODEL_NAME = "gemini-2.5-flash-preview-09-2025";
 
@@ -849,8 +849,6 @@
                 console.error("IoT Monitoring Cycle Failed:", error);
             }
         }
-
-        let anomalyStep = 0;
 
         function initializeCharts() {
             // 1. Destroy old chart instances to prevent memory leaks
