@@ -1,7 +1,11 @@
 # 🫀 CardioSense
 ## Towards Intelligent and Personalized Cardiovascular Health Monitoring
 
-CardioSense is an **AI andd IoT-enabled cardiovascular health monitoring system** developed to demonstrate the integration of physiological sensing, machine learning–based risk analysis, and real-time web visualization. The system collects cardiac signals using wearable sensors, processes and analyzes the data through a machine learning model, and presents personalized health insights via an interactive dashboard and AI assistant. CardioSense is designed as a research and academic prototype aimed at early health awareness, system experimentation, and intelligent decision support rather than clinical diagnosis.
+CardioSense is an **AI andd IoT-enabled cardiovascular health monitoring system** developed to demonstrate the integration of physiological sensing, machine learning–based risk analysis, and real-time web visualization. 
+
+The system collects cardiac signals using wearable sensors, processes and analyzes the data through a machine learning model, and presents personalized health insights via an interactive dashboard and AI assistant. 
+
+CardioSense is designed as a research and academic prototype aimed at early health awareness, system experimentation, and intelligent decision support rather than clinical diagnosis.
 
 ---
 
@@ -103,6 +107,27 @@ Ensure the Flask server is running before starting monitoring
 
 ---
 
+## 🔑 API Key Configuration
+
+This project uses an external AI service for chatbot-based health explanations and recommendations.
+API keys are not included in this repository for security reasons.
+
+### 📍 Where to add your API key
+
+Add your API key in the frontend JavaScript section inside:
+```
+cardiosense_dashboard.html
+```
+
+Look for a placeholder similar to:
+```
+const AI_API_KEY = "YOUR_API_KEY_HERE";
+```
+
+Replace "YOUR_API_KEY_HERE" with your own valid API key.
+
+---
+
 ## 📡 IoT Integration
 
 The ESP32 continuously sends sensor readings to the Flask backend using HTTP-based REST APIs.
@@ -112,10 +137,7 @@ Simulated data mode for testing and development
 
 Live IoT mode for real-time sensor integration
 
-## ⚠️ Disclaimer
-
-This project is not intended for medical diagnosis or treatment.
-CardioSense is an academic and research prototype designed for educational purposes and early health awareness only. Users are advised to consult qualified medical professionals for clinical decisions.
+---
 
 ## 🔮 Future Enhancements
 
@@ -128,6 +150,8 @@ CardioSense is an academic and research prototype designed for educational purpo
 - Cloud-based deployment and scalability
 
 - Secure authentication and encrypted data storage
+
+---
 
 ## 👨‍💻 Author
 
