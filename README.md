@@ -1,7 +1,7 @@
 # 🫀 CardioSense
 ## Towards Intelligent and Personalized Cardiovascular Health Monitoring
 
-CardioSense is an **ML and IoT-enabled cardiovascular health monitoring system** developed to demonstrate the integration of physiological sensing, machine learning–based risk analysis, and real-time web visualization. 
+CardioSense is an **ML and IoT-driven cardiovascular health monitoring system** developed to demonstrate the integration of physiological sensing, machine learning–based risk analysis, and real-time web visualization. 
 
 The system collects cardiac signals using wearable sensors, processes and analyzes the data through a machine learning model, and presents personalized health insights via an interactive dashboard and AI assistant. 
 
