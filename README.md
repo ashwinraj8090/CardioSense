@@ -55,7 +55,8 @@ The model is trained using a synthetic dataset that reflects realistic physiolog
 
 - Live ECG and PPG waveform visualization  
 - Continuous display of HR, SpO₂, HRV, and Blood Pressure  
-- Color-coded cardiovascular risk indicator  
+- Color-coded cardiovascular risk indicator
+- User History of Heart Rate and SpO₂ 
 - AI-assisted health insights based on short-term trends
 - Integrated AI chatbot for explanations, guidance, and user interaction  
 - Session-based user monitoring  
