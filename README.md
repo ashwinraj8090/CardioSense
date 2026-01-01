@@ -153,9 +153,3 @@ Live IoT mode for real-time sensor integration
 - Secure authentication and encrypted data storage
 
 ---
-
-## 👨‍💻 Author
-
-Ashwin Raj
-
-Computer Science Engineering
