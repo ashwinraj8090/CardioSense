@@ -134,9 +134,9 @@ Replace "YOUR_API_KEY_HERE" with your own valid API key.
 The ESP32 continuously sends sensor readings to the Flask backend using HTTP-based REST APIs.
 The system supports:
 
-Simulated data mode for testing and development
+- Simulated data mode for testing and development
 
-Live IoT mode for real-time sensor integration
+- Live IoT mode for real-time sensor integration
 
 ---
 
