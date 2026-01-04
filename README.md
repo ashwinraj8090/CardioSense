@@ -153,3 +153,6 @@ The system supports:
 - Secure authentication and encrypted data storage
 
 ---
+
+## 📜 License
+This project is licensed under the MIT License.
