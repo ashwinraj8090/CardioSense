@@ -1,20 +1,4 @@
-"""
-utils/device_auth.py
----------------------
-WHAT: Authentication for the ESP32, which is a machine, not a human --
-      it doesn't "log in" with a JWT flow. Instead it presents a
-      device_id + device_secret with every request, like an API key.
-WHY:  This directly answers "how does the server know which user's ESP32
-      sent this data?" (see models/device.py for the full explanation).
-      Without this, `/api/readings` would be exactly as broken as the old
-      `/iot-update` -- open to literally anyone with curl.
-HOW:  The ESP32 sends headers:
-        X-Device-Id: esp32-ab12cd
-        X-Device-Secret: <the secret it was provisioned with>
-      We look up the device by device_id, hash-compare the secret (same
-      technique as password checking), confirm status == 'active', and
-      attach both the Device row and its owning User to flask.g.
-"""
+
 from functools import wraps
 from flask import request, jsonify, g
 from werkzeug.security import check_password_hash

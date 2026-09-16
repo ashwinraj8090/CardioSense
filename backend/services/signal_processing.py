@@ -1,13 +1,4 @@
-"""
-Formulas:
-  ECG low-pass filter:   filtered(t) = a*raw(t) + (1-a)*filtered(t-1), a=0.3
-  R-peak detection:      filtered crosses threshold AND >=400ms since last peak
-  RR interval:           RR_i = t_i - t_(i-1)
-  HRV (RMSSD):           sqrt( mean( (RR_i - RR_(i-1))^2 ) ), needs >=5 RR intervals
-  PAT:                   |t_ppg_peak - t_ecg_rpeak|
-  Systolic BP:           120 + (250 - PAT) * 0.15, clamped to [95, 175]
-  Diastolic BP:          0.65 * Systolic
-"""
+
 import math
 import time
 
@@ -19,12 +10,7 @@ MAX_RR_HISTORY = 20
 
 
 def process_sample(state: dict, ecg_value: float, ppg_value: float) -> dict:
-    """
-    Takes the session's current signal_state dict and one new (ecg, ppg)
-    sample, returns an updated state PLUS this sample's derived hrv/bp
-    (hrv/systolic/diastolic will be None if not enough data yet -- this
-    mirrors the original dashboard's "return null, don't fake it" fix).
-    """
+   
     now_ms = time.time() * 1000
 
     filtered_ecg = state.get("filtered_ecg", 0.0)

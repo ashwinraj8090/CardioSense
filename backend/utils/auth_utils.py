@@ -1,44 +1,4 @@
-"""
-utils/auth_utils.py
---------------------
-WHAT is authentication vs authorization (asked for explicitly):
-  AUTHENTICATION = "Who are you?"   -> proven by: correct password at login
-  AUTHORIZATION  = "What are you allowed to see?" -> proven by: your user_id
-                    matching the owner of the row you're asking for
 
-This file implements both halves used throughout the app:
-
-1. PASSWORD HASHING
-   We use werkzeug.security (already a Flask dependency, no new library
-   needed). `generate_password_hash` applies a slow, salted hash
-   (PBKDF2-SHA256 by default). "Salted" means a random value is mixed in
-   per-user, so two users with the same password get different hashes,
-   and "slow" means brute-forcing many guesses is expensive. We NEVER
-   store or compare raw passwords.
-
-2. JWT (JSON Web Token)
-   WHAT: A JWT is a signed, self-contained token. It looks like
-         xxxxx.yyyyy.zzzzz -- header.payload.signature. The payload
-         carries claims we choose, e.g. {"user_id": 7, "exp": ...}.
-   WHY:  After login, the frontend needs proof of identity to attach to
-         every future request, without re-sending the password each time.
-         Flask itself is stateless per-request; the server doesn't
-         remember who's logged in between requests unless something
-         carries that identity. Two common options: server-side sessions
-         (server keeps a session table/cookie) or JWT (server signs a
-         token, keeps NO record of it, and just re-verifies the signature
-         on each request). JWT is used here because it needs no extra
-         session storage/table, and it's the same mechanism you'll be
-         asked about by name in almost any backend interview.
-   HOW:  We sign the payload with JWT_SECRET (config.py). Only someone
-         who knows that secret (i.e. our server) could have produced a
-         signature that verifies correctly. A client can *read* the
-         payload (JWTs are base64, not encrypted) but cannot forge a new
-         one without the secret -- so we never put secrets IN the
-         payload, only non-sensitive identifiers like user_id.
-   WHERE: Issued in routes/auth.py on login. Verified by the
-          @login_required decorator below, used on every protected route.
-"""
 import jwt
 import datetime
 from functools import wraps

@@ -32,7 +32,7 @@ pipeline = Pipeline([
 ])
 pipeline.fit(X_train, y_train)
 
-# 5. Predictions & evaluation (unchanged logic)
+# 5. Predictions & evaluation 
 y_pred = pipeline.predict(X_test)
 y_prob = pipeline.predict_proba(X_test)[:, 1]
 
