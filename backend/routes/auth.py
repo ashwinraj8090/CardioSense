@@ -1,18 +1,4 @@
-"""
-routes/auth.py
----------------
-POST /api/auth/register  - create account (username, password, dob, height, weight)
-POST /api/auth/login     - verify credentials, issue a JWT
-GET  /api/auth/me        - return the caller's own profile (proves the token works)
 
-Note on "logout" with JWT: unlike server-side sessions, a JWT can't be
-"deleted" server-side (the server never stored it). Logout is simply the
-frontend deleting its own copy of the token. This is a real, common JWT
-trade-off worth knowing for the interview: JWTs trade "no server storage
-needed" for "can't be revoked early without extra machinery" (e.g. a
-blocklist table, which we deliberately skip here as unnecessary
-complexity for this project's scale).
-"""
 from datetime import datetime
 from flask import Blueprint, request, jsonify, g
 
@@ -83,9 +69,6 @@ def login():
 
     user = User.query.filter_by(username=username).first()
 
-    # Deliberately identical error message whether the username doesn't
-    # exist or the password is wrong -- prevents "username enumeration"
-    # (an attacker learning which usernames exist by the error message).
     if user is None or not verify_password(password, user.password_hash):
         return jsonify({"error": "Invalid username or password"}), 401
 

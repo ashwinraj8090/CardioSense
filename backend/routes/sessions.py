@@ -1,16 +1,4 @@
-"""
-routes/sessions.py
--------------------
-POST /api/sessions          - start monitoring with a given device_id
-POST /api/sessions/<id>/stop - stop that session
-GET  /api/sessions/current  - the logged-in user's currently active session (if any)
 
-WHY sessions exist at all: without them, a user pressing "Start
-Monitoring" twice in one day, or switching between two ESP32 units, would
-have no way to separate those readings later. A session is simply "the
-readings between one Start and one Stop click," tagged with which device
-was used.
-"""
 from datetime import datetime
 from flask import Blueprint, request, jsonify, g
 
@@ -30,8 +18,6 @@ def start_session():
 
     device = Device.query.filter_by(id=device_id_str, user_id=g.current_user.id).first()
     if device is None:
-        # Authorization check: this device must belong to the CALLER,
-        # not just exist somewhere in the devices table.
         return jsonify({"error": "Device not found or not owned by you"}), 404
 
     # Auto-close any dangling active session on this device before starting a new one.

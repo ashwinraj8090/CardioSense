@@ -1,26 +1,4 @@
-"""
-models/device.py
------------------
-WHAT: The `devices` table. Represents one physical ESP32 unit.
-WHY:  This answers the exact interview question you listed: "How does the
-      server know which user's ESP32 is sending this data?"
 
-      Answer: the ESP32 doesn't send a username or user_id at all. It
-      sends its own device_id + a secret credential. The server looks up
-      *that device* in this table, finds its `user_id` foreign key, and
-      that's how ownership is derived — never trusted from the request
-      body itself.
-
-Design notes:
-- `device_id` is a public-ish identifier (like a serial number) — fine to
-  put in an ESP32's source code.
-- `device_secret_hash` is the hashed version of a secret token that is
-  ALSO flashed onto the ESP32. It plays the same role a password plays
-  for a human: proof the request really comes from that device. Hashed
-  the same way user passwords are, for the same reason (DB leak safety).
-- `status` lets us mark a device active/revoked (e.g. if a device is
-  lost or compromised) without deleting its historical readings.
-"""
 from datetime import datetime
 from extensions import db
 

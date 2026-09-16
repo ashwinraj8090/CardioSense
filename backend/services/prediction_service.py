@@ -1,18 +1,4 @@
-"""
-services/prediction_service.py
--------------------------------
-WHAT: Loads the trained pipeline (scaler+model bundled, see ml/train_...py)
-      ONCE at startup, and exposes predict_risk(features_dict).
-WHY:  Centralizing this means routes/predictions.py never touches
-      joblib or raw sklearn calls directly -- if you swap models later
-      (Part 18/19: "prefer saving the complete preprocessing + model
-      pipeline"), only this file changes.
 
-FEATURE ORDER -- SINGLE SOURCE OF TRUTH:
-  ["HR", "SpO2", "HRV", "Systolic", "Diastolic", "Age", "BMI"]
-  This MUST match ml/train_cardio_risk_model.py's `features` list exactly,
-  or the model will silently score the wrong column as the wrong feature.
-"""
 import os
 import joblib
 import pandas as pd

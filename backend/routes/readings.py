@@ -1,33 +1,4 @@
-"""
-routes/readings.py
--------------------
-POST /api/readings         - ESP32 posts one sensor packet (device-authenticated)
-GET  /api/readings/latest   - frontend polls for the newest reading+prediction (JWT-authenticated)
-GET  /api/readings/history  - frontend fetches this session's/user's history (JWT-authenticated)
 
-This route is the direct replacement for the old, unauthenticated
-`/iot-update` + global `latest_vitals` dict. Every step below closes one
-of the audit findings:
-
-  OLD: anyone could POST to /iot-update.
-  NEW: @device_auth_required -- only a device with a valid device_id +
-       device_secret can post, and we derive the OWNING USER from that
-       device row, never from anything in the request body.
-
-  OLD: one global Python dict shared by every user (race condition, no
-       isolation).
-  NEW: every reading is written to `vital_readings`, scoped to a specific
-       session_id -> user_id. Two devices posting "simultaneously" just
-       become two independent database rows; nothing is overwritten.
-
-  OLD: HRV/BP computed in browser JS, lost on refresh.
-  NEW: computed here via services/signal_processing.py, state persisted
-       on the session row.
-
-  OLD: /predict never applied the training-time scaler.
-  NEW: services/prediction_service.py always scales inside the saved
-       Pipeline object -- there's no code path that can skip it.
-"""
 from flask import Blueprint, request, jsonify, g
 
 from extensions import db
@@ -52,7 +23,6 @@ def _device_key():
 def post_reading():
     data = request.get_json(silent=True) or {}
 
-    # --- Input validation (Part 27) ---
     try:
         ecg = float(data.get("ecg", 0))
         ppg = float(data.get("ppg", 0))
@@ -71,12 +41,8 @@ def post_reading():
 
     session = MonitoringSession.query.filter_by(device_id=device.id, ended_at=None).first()
     if session is None:
-        # This is intentional: we do NOT silently create a session or
-        # silently drop the packet into nowhere. The dashboard must have
-        # explicitly clicked "Start Monitoring" first (Part 13).
         return jsonify({"error": "No active monitoring session for this device"}), 409
 
-    # --- Signal processing (server-side now, see services/signal_processing.py) ---
     state = session.get_signal_state()
     result = process_sample(state, ecg, ppg)
     session.set_signal_state(result["state"])
@@ -90,11 +56,9 @@ def post_reading():
         diastolic_bp=result["diastolic"],
     )
     db.session.add(reading)
-    db.session.flush()  # get reading.id before commit
+    db.session.flush()  
 
     prediction = None
-    # Only run the ML model once we have a full, real feature vector --
-    # never substitute a guessed/default HRV or BP just to produce a number.
     if result["hrv"] is not None and result["systolic"] is not None:
         pred = predict_risk(
             hr=hr, spo2=spo2, hrv=result["hrv"],

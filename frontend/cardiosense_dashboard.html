@@ -497,9 +497,6 @@
         document.title = "CardioSense - Login";
     };
 
-    // On page load, if a token is already in sessionStorage (e.g. user
-    // refreshed the page), try to resume the session instead of forcing
-    // a fresh login.
     (async function tryResumeSession() {
         const token = sessionStorage.getItem("cs_token");
         if (!token) return;
@@ -510,8 +507,6 @@
             sessionStorage.removeItem("cs_token");
         }
     })();
-
-    // ---------- DEVICES ----------
 
     async function loadDevices() {
         devices = await apiFetch('/devices');
@@ -551,8 +546,6 @@
             alert(err.message);
         }
     };
-
-    // ---------- MONITORING SESSIONS ----------
 
     async function checkActiveSession() {
         const data = await apiFetch('/sessions/current');
@@ -598,12 +591,6 @@
         elements.recommendationsContainer.innerHTML = `<p class="text-gray-500 italic">Monitoring session ended. History has been saved.</p>`;
     };
 
-    // ---------- LIVE POLLING (replaces old client-side signal math) ----------
-    // The ESP32 posts directly to the backend; this just asks "what's the
-    // latest reading + prediction for my active session?" every second.
-    // Nothing here computes HRV/BP -- that already happened server-side
-    // (see services/signal_processing.py) before we ever see this data.
-
     async function pollLatest() {
         try {
             const data = await apiFetch('/readings/latest');
@@ -642,8 +629,6 @@
         }
     }
 
-    // ---------- RISK CARD / ALERTS (unchanged look & feel) ----------
-
     const recommendations = {
         HIGH: "Your cardiovascular risk indicator is elevated. Please rest, avoid exertion, and consider consulting a healthcare professional soon.",
         MEDIUM: "Your cardiovascular risk indicator shows some elevation. Paying attention to stress, sleep, and activity is advised.",
@@ -677,8 +662,6 @@
         createAlert(level, level === 'HIGH' ? 'Emergency: High cardiac risk detected.' : level === 'MEDIUM' ? 'Warning: Elevated cardiac risk.' : '');
         updateRecommendations(level);
     }
-
-    // ---------- CHARTS ----------
 
     function initializeCharts() {
         Object.values(charts).forEach(c => c && c.destroy());
@@ -743,13 +726,10 @@
         loadHistoryCharts();
     };
 
-    // ---------- MENU ----------
     const menuButton = document.getElementById('menu-button');
     const dropdownMenu = document.getElementById('dropdown-menu');
     menuButton.onclick = (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('hidden'); };
     window.onclick = () => { if (!dropdownMenu.classList.contains('hidden')) dropdownMenu.classList.add('hidden'); };
-
-    // ---------- CHAT (now via backend proxy, no client-side API key) ----------
 
     function toggleChatWindow() {
         isChatOpen = !isChatOpen;

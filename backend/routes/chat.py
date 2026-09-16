@@ -1,21 +1,4 @@
-"""
-routes/chat.py
----------------
-POST /api/chat - the ONLY place the Gemini API key is ever used.
 
-OLD (both bugs found in the audit):
-  1. app.py had a hardcoded Gemini key in an unused /chat route.
-  2. cardiosense_dashboard.html had a SECOND, different hardcoded key and
-     called Gemini directly from the browser -- meaning anyone who opened
-     devtools/view-source could steal that key and rack up usage on your
-     billing.
-
-NEW: the frontend calls OUR backend, authenticated with the user's own
-JWT (so we know who's chatting). The backend attaches real, current
-health context (their latest reading + risk level, pulled from the
-database -- not whatever the browser claims) and THEN calls Gemini
-server-side, where the key lives only in an environment variable.
-"""
 import requests
 from flask import Blueprint, request, jsonify, g, current_app
 

@@ -1,14 +1,4 @@
-"""
-models/reading.py
-------------------
-WHAT: The `vital_readings` table. One row per sensor packet processed.
-WHY:  This is real persistent history, replacing the old
-      `hrHistory_<username>` / `spo2History_<username>` localStorage
-      arrays. Storing one row per reading (rather than one JSON blob per
-      user) is what lets you: query by time range, join with sessions,
-      aggregate/trend, and paginate — none of which are realistically
-      possible if history is one growing JSON array in a browser.
-"""
+
 from datetime import datetime
 from extensions import db
 
@@ -37,8 +27,6 @@ class VitalReading(db.Model):
             "hrv": self.hrv,
             "systolic": self.systolic_bp,
             "diastolic": self.diastolic_bp,
-            # ecg/ppg included so the dashboard's live waveform chart has
-            # something to plot per poll -- same numbers the ESP32 sent.
             "ecg": self.ecg,
             "ppg": self.ppg,
         }

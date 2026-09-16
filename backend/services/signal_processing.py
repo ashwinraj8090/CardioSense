@@ -1,20 +1,5 @@
 """
-services/signal_processing.py
-------------------------------
-WHAT: Implements the exact HRV (RMSSD) and BP (PAT-based) formulas from
-      your paper -- unchanged math, just moved from browser JavaScript to
-      the backend, per your instruction ("prefer backend processing").
-WHY:  The browser is not a trustworthy place for anything that feeds a
-      security/health decision: a user could open devtools and set
-      window.hr = 40 before it's sent, or simply edit the JS. Also,
-      client-side state (rrIntervals, lastRPeakTime) was lost on every
-      page refresh. Moving it here means the math is authoritative and
-      survives reconnects, because it's tied to the session row in the
-      database, not a browser tab.
-WHERE THIS RUNS: called from routes/readings.py every time a sensor
-      packet is authenticated and accepted.
-
-Formulas (identical to the paper and to the original dashboard JS):
+Formulas:
   ECG low-pass filter:   filtered(t) = a*raw(t) + (1-a)*filtered(t-1), a=0.3
   R-peak detection:      filtered crosses threshold AND >=400ms since last peak
   RR interval:           RR_i = t_i - t_(i-1)
@@ -50,7 +35,7 @@ def process_sample(state: dict, ecg_value: float, ppg_value: float) -> dict:
     # 1. Low-pass filter the ECG sample
     filtered_ecg = ALPHA * ecg_value + (1 - ALPHA) * filtered_ecg
 
-    # 2. R-peak detection -> RR interval bookkeeping
+    # 2. R-peak detection 
     if filtered_ecg > ECG_THRESHOLD and (now_ms - last_r_peak_time) > MIN_PEAK_GAP_MS:
         if last_r_peak_time > 0:
             rr_intervals.append(now_ms - last_r_peak_time)
@@ -62,7 +47,7 @@ def process_sample(state: dict, ecg_value: float, ppg_value: float) -> dict:
     if ppg_value > PPG_THRESHOLD and (now_ms - last_ppg_peak_time) > MIN_PEAK_GAP_MS:
         last_ppg_peak_time = now_ms
 
-    # 4. HRV (RMSSD) -- only once we have enough intervals
+    # 4. HRV (RMSSD) 
     hrv = None
     if len(rr_intervals) >= 5:
         diffs_sq = [
@@ -71,7 +56,7 @@ def process_sample(state: dict, ecg_value: float, ppg_value: float) -> dict:
         ]
         hrv = round(math.sqrt(sum(diffs_sq) / (len(rr_intervals) - 1)), 1)
 
-    # 5. BP via PAT -- only meaningful once we've seen at least one R-peak and PPG peak
+    # 5. BP via PAT 
     systolic = diastolic = None
     if last_r_peak_time > 0 and last_ppg_peak_time > 0:
         pat = abs(last_ppg_peak_time - last_r_peak_time)
