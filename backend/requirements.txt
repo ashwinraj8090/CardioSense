@@ -1,0 +1,12 @@
+flask
+flask-cors
+flask-sqlalchemy
+python-dotenv
+pyjwt
+werkzeug
+requests
+numpy
+pandas
+scikit-learn
+joblib
+flask-limiter

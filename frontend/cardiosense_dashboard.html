@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioSense - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .metric-card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #e5e7eb;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.07);
+        }
+
+        .pulse-live {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+        }
+
+        .alert-banner { animation: slideInDown 0.5s ease-out; }
+
+        @keyframes slideInDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .view-toggle-btn { transition: all 0.2s ease-in-out; }
+        .view-toggle-btn.active { background-color: #ef4444; color: white; box-shadow: 0 4px 14px 0 rgb(0 0 0 / 10%); }
+
+        #chat-window { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; }
+        .chat-bubble-user { background-color: #ef4444; color: white; }
+        .chat-bubble-bot { background-color: #e5e7eb; color: #1f2937; }
+        .risk-value { transition: color 0.5s ease-in-out; }
+
+        .fade-out { animation: fadeOut 0.5s forwards; }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+
+        .hidden { display: none !important; }
+
+        .mic-active { color: #ef4444; animation: mic-pulse 1s infinite alternate; }
+        @keyframes mic-pulse { from { transform: scale(1); opacity: 1; } to { transform: scale(1.2); opacity: 0.7; } }
+    </style>
+</head>
+
+<body class="text-gray-800">
+
+    <!-- ============== LOGIN / SIGNUP ============== -->
+    <div id="login-page" class="flex items-center justify-center min-h-screen bg-gray-100">
+        <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-2xl shadow-xl">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-3 mb-4">
+                    <svg class="w-12 h-12 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                    <h1 class="text-3xl font-bold text-gray-900">CardioSense</h1>
+                </div>
+                <p id="auth-instruction" class="text-gray-600">Please sign in to access your health dashboard.</p>
+            </div>
+
+            <form id="login-form" class="mt-8 space-y-6">
+                <div class="space-y-4">
+                    <input id="username" name="username" type="text" required
+                        class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                        placeholder="Username">
+                    <input id="password" name="password" type="password" required
+                        class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                        placeholder="Password">
+                </div>
+                <div id="login-error" class="text-red-500 text-sm text-center hidden"></div>
+                <button type="submit"
+                    class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-lg text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-transform transform hover:scale-105">
+                    Sign In
+                </button>
+                <p class="text-center text-sm text-gray-500">
+                    New user? <a href="#" id="go-to-signup" class="text-red-500 font-semibold hover:underline">Sign Up here</a>
+                </p>
+            </form>
+
+            <form id="signup-form" class="mt-8 space-y-4 hidden">
+                <div class="space-y-4">
+                    <input id="new-username" type="text" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                        placeholder="Choose Username (min 3 chars)">
+                    <input id="new-password" type="password" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                        placeholder="Create Password (min 6 chars)">
+                    <div class="text-left">
+                        <label class="block text-gray-700 text-xs font-bold mb-1 ml-1" for="new-dob">DATE OF BIRTH</label>
+                        <input id="new-dob" type="date" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="text-left">
+                            <label class="block text-gray-700 text-xs font-bold mb-1 ml-1" for="new-height">HEIGHT (cm)</label>
+                            <input id="new-height" type="number" min="100" max="250" step="0.1" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                                placeholder="175">
+                        </div>
+                        <div class="text-left">
+                            <label class="block text-gray-700 text-xs font-bold mb-1 ml-1" for="new-weight">WEIGHT (kg)</label>
+                            <input id="new-weight" type="number" min="25" max="300" step="0.1" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                                placeholder="70">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 ml-1">Height and weight are used to compute BMI, one of the model's risk factors.</p>
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input id="terms" type="checkbox" required
+                                class="focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded">
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="terms" class="font-medium text-gray-700">I agree to the <a href="#"
+                                    class="text-red-500 hover:underline">Terms of Service</a> and <a href="#"
+                                    class="text-red-500 hover:underline">Privacy Policy</a>.</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="signup-error" class="text-red-500 text-sm text-center hidden"></div>
+                <div id="signup-success" class="text-green-600 text-sm text-center hidden">Account created! Signing you in...</div>
+                <button type="submit"
+                    class="w-full py-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600">Create Account</button>
+                <p class="text-center text-sm text-gray-500">
+                    Already have an account? <a href="#" id="go-to-login" class="text-red-500 font-semibold hover:underline">Sign In</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============== MAIN APP ============== -->
+    <div id="app-container" class="hidden">
+        <header class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-red-50 p-2 rounded-lg">
+                        <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">CardioSense</h1>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <p id="patient-name" class="text-sm text-gray-600"></p>
+                    <div id="patient-initials"
+                        class="w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center font-bold shadow-sm ring-2 ring-red-50">--</div>
+                    <div class="relative ml-2">
+                        <button id="menu-button" class="flex items-center justify-center w-8 h-8 hover:bg-gray-100 rounded-md transition-all text-gray-500">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                        <div id="dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-50 overflow-hidden">
+                            <button id="nav-manage-devices" class="w-full text-left px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors flex items-center gap-2">
+                                Manage Devices
+                            </button>
+                            <button id="logout-btn" class="w-full text-left px-3 py-2 text-xs font-bold text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors">
+                                Log Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div id="alert-container" class="mb-6 sticky top-24 z-20"></div>
+
+            <!-- Device panel: shown before a device is registered/selected -->
+            <div id="device-panel" class="metric-card p-6 mb-8 max-w-xl mx-auto hidden">
+                <h2 class="text-lg font-semibold text-gray-700 mb-3">Set Up Your ESP32 Device</h2>
+                <p class="text-sm text-gray-500 mb-4">
+                    Register the device once. You'll get a secret to flash onto the ESP32 firmware -- it's shown only this one time.
+                </p>
+                <div id="device-list" class="space-y-2 mb-4"></div>
+                <div class="flex gap-2">
+                    <input id="new-device-id" type="text" placeholder="Device ID e.g. esp32-livingroom"
+                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400">
+                    <button id="register-device-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg">Register</button>
+                </div>
+                <div id="device-secret-reveal" class="hidden mt-4 p-3 bg-yellow-50 border border-yellow-300 rounded-lg text-sm">
+                    <p class="font-semibold text-yellow-800">Save this secret now -- it will not be shown again:</p>
+                    <code id="device-secret-value" class="block mt-1 break-all text-yellow-900"></code>
+                </div>
+            </div>
+
+            <div id="controls" class="hidden justify-center mb-8 space-x-4">
+                <select id="device-select" class="px-4 py-3 rounded-full border border-gray-300 text-gray-700"></select>
+                <button id="start-button"
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                    Begin Real-Time Monitoring
+                </button>
+                <button id="stop-button"
+                    class="hidden bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                    Stop Monitoring
+                </button>
+            </div>
+
+            <div id="dashboard" class="hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                    <div class="metric-card p-4 md:p-6 text-center">
+                        <h2 class="text-md font-semibold text-gray-600">Heart Rate</h2>
+                        <p class="text-4xl md:text-5xl font-bold mt-2" id="hr-value">--</p>
+                        <p class="text-xs text-gray-500 mt-1">BPM</p>
+                    </div>
+                    <div class="metric-card p-4 md:p-6 text-center">
+                        <h2 class="text-md font-semibold text-gray-600">SpO2</h2>
+                        <p class="text-4xl md:text-5xl font-bold mt-2" id="spo2-value">--</p>
+                        <p class="text-xs text-gray-500 mt-1">% Saturation</p>
+                    </div>
+                    <div class="metric-card p-4 md:p-6 text-center">
+                        <h2 class="text-md font-semibold text-gray-600">HRV</h2>
+                        <p class="text-4xl md:text-5xl font-bold mt-2" id="hrv-value">--</p>
+                        <p class="text-xs text-gray-500 mt-1">ms</p>
+                    </div>
+                    <div class="metric-card p-4 md:p-6 text-center">
+                        <h2 class="text-md font-semibold text-gray-600">Blood Pressure</h2>
+                        <p class="text-4xl md:text-5xl font-bold mt-2" id="bp-value">--/--</p>
+                        <p class="text-xs text-gray-500 mt-1">mmHg (PAT Est.)</p>
+                    </div>
+                    <div id="risk-card" class="metric-card p-4 md:p-6 text-center border-2 border-transparent">
+                        <h2 class="text-md font-semibold text-gray-600">Heart Attack Risk</h2>
+                        <p class="text-4xl md:text-5xl font-bold mt-2 risk-value" id="risk-value">--</p>
+                        <p class="text-xs text-gray-500 mt-1">Prediction</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center mb-6 bg-gray-200 rounded-full p-1 max-w-sm mx-auto">
+                <button id="live-view-btn" class="view-toggle-btn active w-full py-2 px-4 rounded-full font-semibold">Live Monitor</button>
+                <button id="history-view-btn" class="view-toggle-btn w-full py-2 px-4 rounded-full font-semibold">Historical Data</button>
+            </div>
+
+            <div id="live-dashboard">
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                    <div class="lg:col-span-3 metric-card p-6 h-96">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-gray-700">Live ECG & PPG Signals</h2>
+                            <div id="live-indicator" class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-gray-300 rounded-full"></div><span>Offline</span>
+                            </div>
+                        </div>
+                        <canvas id="ecgChart"></canvas>
+                    </div>
+                    <div class="lg:col-span-2 metric-card p-6 h-96">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">AI Recommendations</h2>
+                        <div id="recommendations-container" class="space-y-4 overflow-y-auto h-72 pr-2">
+                            <p class="text-gray-500">Begin monitoring to receive health insights...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="historical-dashboard" class="hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="metric-card p-6 h-80">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">Heart Rate History</h2>
+                        <canvas id="hrHistoryChart"></canvas>
+                    </div>
+                    <div class="metric-card p-6 h-80">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">Risk Score History</h2>
+                        <canvas id="riskHistoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="chatbot-container" class="fixed bottom-6 right-6 z-30">
+            <div id="chat-window" class="hidden absolute bottom-20 right-0 w-80 h-96 bg-white rounded-2xl shadow-2xl flex flex-col transform translate-y-4 opacity-0">
+                <div class="p-4 bg-red-500 text-white rounded-t-2xl flex justify-between items-center">
+                    <h3 class="font-bold">CardioSense Assistant</h3>
+                    <button id="close-chat-btn" class="text-white text-2xl leading-none">&times;</button>
+                </div>
+                <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 flex flex-col"></div>
+                <form id="chat-form" class="p-4 border-t border-gray-200 flex items-center gap-2">
+                    <button type="button" id="voice-input-btn" class="text-gray-400 hover:text-red-500 transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                        </svg>
+                    </button>
+                    <input type="text" id="chat-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400" placeholder="Ask a question...">
+                    <button type="submit" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+            <button id="chat-toggle-btn" class="bg-red-500 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center transform hover:scale-110 transition-transform">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+    /* ==========================================================
+       CardioSense frontend
+       ----------------------------------------------------------
+       WHAT changed vs the old dashboard.html:
+       - No more localStorage password storage. Login/register call
+         the real backend (routes/auth.py), which returns a JWT.
+       - The JWT is kept in sessionStorage, not localStorage. This is
+         a deliberate choice: sessionStorage clears when the tab
+         closes, limiting how long a stolen token (e.g. via an XSS
+         bug) stays useful, and we're storing a *token*, never a raw
+         password, so this is a very different risk than the old
+         plaintext-password-in-localStorage design.
+       - No more client-side HRV/BP math and no more direct POST of
+         sensor values from the browser -- the ESP32 talks to the
+         backend directly (device-authenticated), and the dashboard
+         only ever POLLS /api/readings/latest to display what's
+         already been computed and stored server-side.
+       - No Gemini key anywhere in this file. /api/chat is called
+         with the user's JWT; the backend holds the real key.
+       ========================================================== */
+
+    const API_BASE = "http://127.0.0.1:5000/api";
+
+    function authHeaders() {
+        const token = sessionStorage.getItem("cs_token");
+        return token ? { "Authorization": "Bearer " + token } : {};
+    }
+
+    async function apiFetch(path, options = {}) {
+        const resp = await fetch(API_BASE + path, {
+            ...options,
+            headers: {
+                "Content-Type": "application/json",
+                ...authHeaders(),
+                ...(options.headers || {}),
+            },
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) throw new Error(data.error || `Request failed (${resp.status})`);
+        return data;
+    }
+
+    const elements = {
+        loginPage: document.getElementById('login-page'),
+        loginForm: document.getElementById('login-form'),
+        signupForm: document.getElementById('signup-form'),
+        loginError: document.getElementById('login-error'),
+        signupError: document.getElementById('signup-error'),
+        usernameInput: document.getElementById('username'),
+        passwordInput: document.getElementById('password'),
+        appContainer: document.getElementById('app-container'),
+        patientName: document.getElementById('patient-name'),
+        patientInitials: document.getElementById('patient-initials'),
+        devicePanel: document.getElementById('device-panel'),
+        deviceList: document.getElementById('device-list'),
+        newDeviceId: document.getElementById('new-device-id'),
+        registerDeviceBtn: document.getElementById('register-device-btn'),
+        deviceSecretReveal: document.getElementById('device-secret-reveal'),
+        deviceSecretValue: document.getElementById('device-secret-value'),
+        controls: document.getElementById('controls'),
+        deviceSelect: document.getElementById('device-select'),
+        startButton: document.getElementById('start-button'),
+        stopButton: document.getElementById('stop-button'),
+        dashboard: document.getElementById('dashboard'),
+        hrValue: document.getElementById('hr-value'),
+        spo2Value: document.getElementById('spo2-value'),
+        hrvValue: document.getElementById('hrv-value'),
+        bpValue: document.getElementById('bp-value'),
+        riskCard: document.getElementById('risk-card'),
+        riskValue: document.getElementById('risk-value'),
+        liveIndicator: document.getElementById('live-indicator'),
+        alertContainer: document.getElementById('alert-container'),
+        ecgCanvas: document.getElementById('ecgChart'),
+        hrHistoryCanvas: document.getElementById('hrHistoryChart'),
+        riskHistoryCanvas: document.getElementById('riskHistoryChart'),
+        recommendationsContainer: document.getElementById('recommendations-container'),
+        liveViewBtn: document.getElementById('live-view-btn'),
+        historyViewBtn: document.getElementById('history-view-btn'),
+        liveDashboard: document.getElementById('live-dashboard'),
+        historicalDashboard: document.getElementById('historical-dashboard'),
+        chatToggleButton: document.getElementById('chat-toggle-btn'),
+        chatWindow: document.getElementById('chat-window'),
+        closeChatButton: document.getElementById('close-chat-btn'),
+        chatMessages: document.getElementById('chat-messages'),
+        chatForm: document.getElementById('chat-form'),
+        chatInput: document.getElementById('chat-input'),
+        voiceBtn: document.getElementById('voice-input-btn'),
+    };
+
+    let currentUser = null;      // {id, username, age, bmi, ...} from /api/auth/me
+    let activeSession = null;    // {id, device_id, ...} or null
+    let monitoringInterval = null;
+    let charts = {};
+    let isChatOpen = false;
+    let devices = [];
+
+    // ---------- AUTH ----------
+
+    document.getElementById('go-to-signup').onclick = (e) => {
+        e.preventDefault();
+        elements.loginForm.classList.add('hidden');
+        elements.signupForm.classList.remove('hidden');
+        document.getElementById('auth-instruction').textContent = "Join CardioSense to monitor your heart.";
+    };
+    document.getElementById('go-to-login').onclick = (e) => {
+        e.preventDefault();
+        elements.signupForm.classList.add('hidden');
+        elements.loginForm.classList.remove('hidden');
+        document.getElementById('auth-instruction').textContent = "Please sign in to access your health dashboard.";
+    };
+
+    elements.signupForm.onsubmit = async (e) => {
+        e.preventDefault();
+        elements.signupError.classList.add('hidden');
+        const body = {
+            username: document.getElementById('new-username').value.trim(),
+            password: document.getElementById('new-password').value,
+            dob: document.getElementById('new-dob').value,
+            height_cm: document.getElementById('new-height').value,
+            weight_kg: document.getElementById('new-weight').value,
+        };
+        try {
+            const data = await apiFetch('/auth/register', { method: 'POST', body: JSON.stringify(body) });
+            document.getElementById('signup-success').classList.remove('hidden');
+            setTimeout(() => enterApp(data.token, data.user), 900);
+        } catch (err) {
+            elements.signupError.textContent = err.message;
+            elements.signupError.classList.remove('hidden');
+        }
+    };
+
+    elements.loginForm.onsubmit = async (e) => {
+        e.preventDefault();
+        elements.loginError.classList.add('hidden');
+        const username = elements.usernameInput.value.trim();
+        const password = elements.passwordInput.value;
+        try {
+            const data = await apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
+            enterApp(data.token, data.user);
+        } catch (err) {
+            elements.loginError.textContent = err.message;
+            elements.loginError.classList.remove('hidden');
+        }
+    };
+
+    function enterApp(token, user) {
+        sessionStorage.setItem("cs_token", token);
+        currentUser = user;
+
+        elements.patientName.textContent = `${user.username} · Age ${user.age} · BMI ${user.bmi}`;
+        const initials = user.username.split(' ').map(n => n[0]).join('').toUpperCase();
+        elements.patientInitials.textContent = initials.substring(0, 2);
+
+        elements.loginPage.classList.add('fade-out');
+        setTimeout(() => {
+            elements.loginPage.classList.add('hidden');
+            elements.appContainer.classList.remove('hidden');
+        }, 500);
+        document.title = "CardioSense - Dashboard";
+
+        loadDevices();
+        checkActiveSession();
+    }
+
+    document.getElementById('logout-btn').onclick = () => {
+        if (!confirm("Are you sure you want to log out?")) return;
+        if (monitoringInterval) { clearInterval(monitoringInterval); monitoringInterval = null; }
+        sessionStorage.removeItem("cs_token");
+        currentUser = null;
+        activeSession = null;
+        elements.appContainer.classList.add('hidden');
+        elements.loginPage.classList.remove('hidden', 'fade-out');
+        elements.loginForm.reset();
+        elements.dashboard.classList.add('hidden');
+        elements.controls.classList.add('hidden');
+        elements.startButton.classList.remove('hidden');
+        elements.stopButton.classList.add('hidden');
+        document.title = "CardioSense - Login";
+    };
+
+    // On page load, if a token is already in sessionStorage (e.g. user
+    // refreshed the page), try to resume the session instead of forcing
+    // a fresh login.
+    (async function tryResumeSession() {
+        const token = sessionStorage.getItem("cs_token");
+        if (!token) return;
+        try {
+            const user = await apiFetch('/auth/me');
+            enterApp(token, user);
+        } catch {
+            sessionStorage.removeItem("cs_token");
+        }
+    })();
+
+    // ---------- DEVICES ----------
+
+    async function loadDevices() {
+        devices = await apiFetch('/devices');
+        renderDevices();
+    }
+
+    function renderDevices() {
+        elements.deviceList.innerHTML = devices.length
+            ? devices.map(d => `<div class="text-sm px-3 py-2 bg-gray-50 rounded-lg flex justify-between"><span>${d.device_id}</span><span class="text-gray-400">${d.label}</span></div>`).join('')
+            : `<p class="text-sm text-gray-400">No devices registered yet.</p>`;
+
+        elements.deviceSelect.innerHTML = devices.map(d => `<option value="${d.id}">${d.device_id}</option>`).join('');
+
+        if (devices.length === 0) {
+            elements.devicePanel.classList.remove('hidden');
+            elements.controls.classList.add('hidden');
+        } else {
+            elements.devicePanel.classList.add('hidden');
+            elements.controls.classList.remove('hidden');
+        }
+    }
+
+    document.getElementById('nav-manage-devices').onclick = () => {
+        elements.devicePanel.classList.remove('hidden');
+    };
+
+    elements.registerDeviceBtn.onclick = async () => {
+        const deviceId = elements.newDeviceId.value.trim();
+        if (!deviceId) return;
+        try {
+            const data = await apiFetch('/devices', { method: 'POST', body: JSON.stringify({ device_id: deviceId }) });
+            elements.deviceSecretValue.textContent = data.device_secret;
+            elements.deviceSecretReveal.classList.remove('hidden');
+            elements.newDeviceId.value = '';
+            await loadDevices();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    // ---------- MONITORING SESSIONS ----------
+
+    async function checkActiveSession() {
+        const data = await apiFetch('/sessions/current');
+        if (data.active_session) {
+            activeSession = data.active_session;
+            enterMonitoringUI();
+        }
+    }
+
+    elements.startButton.onclick = async () => {
+        const deviceDbId = elements.deviceSelect.value;
+        if (!deviceDbId) { alert("Register or select a device first."); return; }
+        try {
+            activeSession = await apiFetch('/sessions', { method: 'POST', body: JSON.stringify({ device_id: parseInt(deviceDbId) }) });
+            enterMonitoringUI();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    function enterMonitoringUI() {
+        elements.startButton.classList.add('hidden');
+        elements.stopButton.classList.remove('hidden');
+        elements.dashboard.classList.remove('hidden');
+        elements.liveIndicator.innerHTML = `<div class="w-3 h-3 bg-red-500 rounded-full pulse-live"></div><span>Live</span>`;
+        initializeCharts();
+        pollLatest();
+        monitoringInterval = setInterval(pollLatest, 1000);
+    }
+
+    elements.stopButton.onclick = async () => {
+        if (activeSession) {
+            try { await apiFetch(`/sessions/${activeSession.id}/stop`, { method: 'POST' }); } catch {}
+        }
+        clearInterval(monitoringInterval);
+        monitoringInterval = null;
+        activeSession = null;
+
+        elements.startButton.classList.remove('hidden');
+        elements.stopButton.classList.add('hidden');
+        elements.dashboard.classList.add('hidden');
+        elements.liveIndicator.innerHTML = `<div class="w-3 h-3 bg-gray-300 rounded-full"></div><span>Offline</span>`;
+        elements.recommendationsContainer.innerHTML = `<p class="text-gray-500 italic">Monitoring session ended. History has been saved.</p>`;
+    };
+
+    // ---------- LIVE POLLING (replaces old client-side signal math) ----------
+    // The ESP32 posts directly to the backend; this just asks "what's the
+    // latest reading + prediction for my active session?" every second.
+    // Nothing here computes HRV/BP -- that already happened server-side
+    // (see services/signal_processing.py) before we ever see this data.
+
+    async function pollLatest() {
+        try {
+            const data = await apiFetch('/readings/latest');
+
+            if (data.status === 'no_active_session' || data.status === 'awaiting_first_reading') {
+                elements.hrValue.textContent = "--";
+                elements.spo2Value.textContent = "--";
+                elements.hrvValue.textContent = "--";
+                elements.bpValue.textContent = "--/--";
+                elements.riskValue.textContent = "--";
+                return;
+            }
+
+            const r = data.reading;
+            elements.hrValue.textContent = r.hr;
+            elements.spo2Value.textContent = r.spo2;
+            elements.hrvValue.textContent = r.hrv !== null ? r.hrv : "--";
+            elements.bpValue.textContent = (r.systolic !== null) ? `${r.systolic}/${r.diastolic}` : "--/--";
+
+            if (charts.ecg) {
+                const now = Date.now();
+                charts.ecg.data.datasets[0].data.push({ x: now, y: r.ecg });
+                charts.ecg.data.datasets[1].data.push({ x: now, y: r.ppg });
+                if (charts.ecg.data.datasets[0].data.length > 100) {
+                    charts.ecg.data.datasets[0].data.shift();
+                    charts.ecg.data.datasets[1].data.shift();
+                }
+                charts.ecg.update('none');
+            }
+
+            if (data.prediction) {
+                updateRiskCard(data.prediction.risk, data.prediction.risk_level);
+            }
+        } catch (err) {
+            console.error("Polling failed:", err);
+        }
+    }
+
+    // ---------- RISK CARD / ALERTS (unchanged look & feel) ----------
+
+    const recommendations = {
+        HIGH: "Your cardiovascular risk indicator is elevated. Please rest, avoid exertion, and consider consulting a healthcare professional soon.",
+        MEDIUM: "Your cardiovascular risk indicator shows some elevation. Paying attention to stress, sleep, and activity is advised.",
+        LOW: "Your vital signs are within a lower-risk range. Continue your current routine and keep monitoring regularly.",
+    };
+
+    function updateRecommendations(level) {
+        const text = recommendations[level] || recommendations['LOW'];
+        elements.recommendationsContainer.innerHTML = `<div class="p-4 bg-gray-100 rounded-lg"><p class="font-semibold text-gray-700">Health Insight</p><p class="text-gray-600 text-sm">${text}</p></div>`;
+    }
+
+    function createAlert(level, message) {
+        elements.alertContainer.innerHTML = '';
+        if (level === 'LOW') return;
+        const bgColor = level === 'HIGH' ? 'bg-red-100 border-red-500 text-red-700' : 'bg-yellow-100 border-yellow-500 text-yellow-700';
+        const title = level === 'HIGH' ? 'CRITICAL ALERT' : 'MILD ANOMALY DETECTED';
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert-banner border-l-4 p-4 rounded-lg shadow-md ${bgColor}`;
+        alertDiv.innerHTML = `<div><p class="font-bold">${title}</p><p class="text-sm">${message}</p></div>`;
+        elements.alertContainer.appendChild(alertDiv);
+    }
+
+    function updateRiskCard(risk, level) {
+        elements.riskValue.textContent = `${risk}%`;
+        elements.riskCard.classList.remove('border-green-500', 'border-yellow-500', 'border-red-500');
+        const colorMap = { HIGH: 'red', MEDIUM: 'yellow', LOW: 'green' };
+        const color = colorMap[level] || 'green';
+        elements.riskCard.classList.add(`border-${color}-500`);
+        elements.riskValue.className = `text-4xl md:text-5xl font-bold mt-2 text-${color}-600`;
+
+        createAlert(level, level === 'HIGH' ? 'Emergency: High cardiac risk detected.' : level === 'MEDIUM' ? 'Warning: Elevated cardiac risk.' : '');
+        updateRecommendations(level);
+    }
+
+    // ---------- CHARTS ----------
+
+    function initializeCharts() {
+        Object.values(charts).forEach(c => c && c.destroy());
+
+        charts.ecg = new Chart(elements.ecgCanvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                datasets: [
+                    { label: 'ECG (AD8232)', borderColor: 'rgb(239, 68, 68)', borderWidth: 2, pointRadius: 0, data: [], fill: false, tension: 0.4 },
+                    { label: 'PPG (MAX30100)', borderColor: 'rgb(59, 130, 246)', borderWidth: 2, pointRadius: 0, data: [], fill: false, tension: 0.4 },
+                ],
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    x: { type: 'linear', ticks: { display: false } },
+                    y: { min: 0, max: 4095, ticks: { display: false }, grid: { color: '#f3f4f6' } },
+                },
+                plugins: { legend: { display: true, position: 'top' }, tooltip: { enabled: false } },
+            },
+        });
+    }
+
+    async function loadHistoryCharts() {
+        const [readings, predictions] = await Promise.all([
+            apiFetch('/readings/history?limit=100'),
+            apiFetch('/predictions/history?limit=100'),
+        ]);
+
+        if (charts.hrHistory) charts.hrHistory.destroy();
+        charts.hrHistory = new Chart(elements.hrHistoryCanvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: readings.map(r => new Date(r.timestamp).toLocaleTimeString()),
+                datasets: [{ label: 'BPM', data: readings.map(r => r.hr), borderColor: 'rgb(59, 130, 246)', backgroundColor: 'rgba(59, 130, 246, 0.1)', tension: 0.4, fill: true }],
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } },
+        });
+
+        if (charts.riskHistory) charts.riskHistory.destroy();
+        charts.riskHistory = new Chart(elements.riskHistoryCanvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: predictions.map(p => new Date(p.timestamp).toLocaleTimeString()),
+                datasets: [{ label: 'Risk %', data: predictions.map(p => p.risk), borderColor: 'rgb(239, 68, 68)', backgroundColor: 'rgba(239, 68, 68, 0.1)', tension: 0.4, fill: true }],
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } },
+        });
+    }
+
+    elements.liveViewBtn.onclick = () => {
+        elements.liveViewBtn.classList.add('active');
+        elements.historyViewBtn.classList.remove('active');
+        elements.liveDashboard.classList.remove('hidden');
+        elements.historicalDashboard.classList.add('hidden');
+    };
+    elements.historyViewBtn.onclick = () => {
+        elements.historyViewBtn.classList.add('active');
+        elements.liveViewBtn.classList.remove('active');
+        elements.historicalDashboard.classList.remove('hidden');
+        elements.liveDashboard.classList.add('hidden');
+        loadHistoryCharts();
+    };
+
+    // ---------- MENU ----------
+    const menuButton = document.getElementById('menu-button');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    menuButton.onclick = (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('hidden'); };
+    window.onclick = () => { if (!dropdownMenu.classList.contains('hidden')) dropdownMenu.classList.add('hidden'); };
+
+    // ---------- CHAT (now via backend proxy, no client-side API key) ----------
+
+    function toggleChatWindow() {
+        isChatOpen = !isChatOpen;
+        if (isChatOpen) {
+            elements.chatWindow.classList.remove('hidden');
+            setTimeout(() => elements.chatWindow.classList.remove('translate-y-4', 'opacity-0'), 10);
+            if (elements.chatMessages.children.length === 0) displayMessage("Hello! I'm the CardioSense assistant. Ask me about your status.", 'bot');
+        } else {
+            elements.chatWindow.classList.add('translate-y-4', 'opacity-0');
+            setTimeout(() => elements.chatWindow.classList.add('hidden'), 300);
+        }
+    }
+
+    function displayMessage(message, sender) {
+        const bubble = document.createElement('div');
+        bubble.className = `w-fit max-w-xs p-3 rounded-2xl mb-2`;
+        bubble.classList.add(...(sender === 'user' ? ['chat-bubble-user', 'self-end', 'rounded-br-sm', 'ml-auto'] : ['chat-bubble-bot', 'self-start', 'rounded-tl-sm', 'mr-auto']));
+        bubble.innerHTML = message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+        elements.chatMessages.appendChild(bubble);
+        elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+        return bubble;
+    }
+
+    elements.chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userInput = elements.chatInput.value.trim();
+        if (!userInput) return;
+        displayMessage(userInput, 'user');
+        elements.chatInput.value = '';
+        const thinkingBubble = displayMessage("Thinking...", 'bot');
+        try {
+            const data = await apiFetch('/chat', { method: 'POST', body: JSON.stringify({ message: userInput }) });
+            thinkingBubble.innerHTML = data.reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        } catch (err) {
+            thinkingBubble.textContent = "Sorry, I can't connect to AI right now.";
+        }
+        elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+    });
+
+    elements.chatToggleButton.onclick = toggleChatWindow;
+    elements.closeChatButton.onclick = toggleChatWindow;
+
+    // Voice input (Web Speech API -- browser-native, no external key needed)
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        elements.voiceBtn.onclick = () => {
+            try { recognition.start(); elements.voiceBtn.classList.add('mic-active'); } catch (e) {}
+        };
+        recognition.onresult = (event) => {
+            elements.chatInput.value = event.results[0][0].transcript;
+            elements.voiceBtn.classList.remove('mic-active');
+            elements.chatForm.dispatchEvent(new Event('submit'));
+        };
+        recognition.onspeechend = () => { recognition.stop(); elements.voiceBtn.classList.remove('mic-active'); };
+        recognition.onerror = () => elements.voiceBtn.classList.remove('mic-active');
+    } else {
+        elements.voiceBtn.style.display = 'none';
+    }
+    </script>
+</body>
+</html>
